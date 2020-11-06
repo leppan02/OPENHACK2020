@@ -26,11 +26,9 @@ class Trade(db.Model):
         self.trade_start = trade_start
         self.trade_end = trade_end
 
-
 @app.route('/', methods=['POST', 'GET'])
 def index(): 
     if request.is_json:
-        print("hewwo")
         data = request.get_json() 
 
         new_trade = Trade(country_from=data['country_from'], country_to=data['country_to'], thing=data['thing'], amount=data['amount'], trade_start=data['trade_start'], trade_end=data['trade_end'])
