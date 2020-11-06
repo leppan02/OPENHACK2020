@@ -26,17 +26,22 @@ class Trade(db.Model):
         self.trade_start = trade_start
         self.trade_end = trade_end
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def index(): 
-    if request.is_json: 
-        data = request.get_json() 
+    if request.method == 'POST':
+        if request.is_json: 
+            data = request.get_json() 
 
-        new_trade = Trade(country_from=data['country_from'], country_to=data['country_to'], thing=data['thing'], amount=data['amount'], trade_start=data['trade_start'], trade_end=data['trade_end'])
+            new_trade = Trade(country_from=data['country_from'], country_to=data['country_to'], thing=data['thing'], amount=data['amount'], trade_start=data['trade_start'], trade_end=data['trade_end'])
 
-        db.session.add(new_trade)
-        db.session.commit()
-
-    return render_template('index.html')
+            db.session.add(new_trade)
+            db.session.commit()
+    
+            return {"message": "abca"}
+        else:
+            return {"error": "The request payload is not in JSON format"}
+    else:
+        return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
