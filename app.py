@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:docker@206.81.24.72:1000/hh"
@@ -26,12 +27,22 @@ class Trade(db.Model):
         self.trade_start = trade_start
         self.trade_end = trade_end
 
+def parse_date(data):
+    return datetime.strptime(data, "%Y-%m-%d").date()
+
 @app.route('/', methods=['POST', 'GET'])
 def index(): 
     if request.is_json:
         data = request.get_json() 
 
-        new_trade = Trade(country_from=data['country_from'], country_to=data['country_to'], thing=data['thing'], amount=data['amount'], trade_start=data['trade_start'], trade_end=data['trade_end'])
+        new_trade = Trade(
+            country_from=data['country_from'],
+            country_to=data['country_to'],
+            thing=data['thing'],
+            amount=data['amount'],
+            trade_start=parse_date(data['trade_start']),
+            trade_end=parse_date(data['trade_end'])
+        )
 
         db.session.add(new_trade)
         db.session.commit()
