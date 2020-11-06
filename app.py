@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:postgres@206.81.24.72:1000/"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:docker@206.81.24.72:1000/"
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -26,9 +26,11 @@ class Trade(db.Model):
         self.trade_start = trade_start
         self.trade_end = trade_end
 
-@app.route('/')
+
+@app.route('/', methods=['POST', 'GET'])
 def index(): 
-    if request.is_json: 
+    if request.is_json:
+        print("hewwo")
         data = request.get_json() 
 
         new_trade = Trade(country_from=data['country_from'], country_to=data['country_to'], thing=data['thing'], amount=data['amount'], trade_start=data['trade_start'], trade_end=data['trade_end'])
