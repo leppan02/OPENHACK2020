@@ -11,6 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
     <script src="https://datamaps.github.io/scripts/0.5.8/datamaps.world.hires.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js">
+    </script>
     <h1>Working!</h1>
     <div style="position: relative; width: 1000px; height: 700px;">
         <div id="container" style="position: relative; width: 100%; height: 100%;"></div>
@@ -40,7 +42,7 @@
                     strokeColor: '#DD1C7760',
                     strokeWidth: 2,
                     arcSharpness: 1,
-                    animationSpeed: 600, // Milliseconds
+                    animationSpeed: 1500, // Milliseconds
                     popupOnHover: true, // True to show the popup while hovering
                     popupTemplate: function (geography, data) { // This function should just return a string
                         // Case with latitude and longitude
@@ -103,9 +105,11 @@
             let arcs = []
             for (trade in trades) {
                 if (countryFilter[trades[trade].country_from] || countryFilter[trades[trade].country_to]) {
+                    Math.seedrandom(trades[trade])
                     arcs.push({
                         origin: trades[trade].country_from,
                         destination: trades[trade].country_to,
+                        arcSharpness: 2.5 - Math.random() * 2,
                     })
                 }
 
