@@ -40,29 +40,34 @@ class Weapon(db.Model):
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
 
+def get_or_none(data, field):
+    if field in data:
+        return data[field]
+
 @app.route('/', methods=['POST', 'GET'])
 def index(): 
     if request.is_json:
         data = request.get_json()
 
-        print("a")
-        included_parts = db.session.query(
-            Weapon.weapon_name,
-        ).filter(Weapon.weapon_name == data["weapon_name"]).all()
+        if "weapon_name" in data:
+            print("a")
+            included_parts = db.session.query(
+                Weapon.weapon_name,
+            ).filter(Weapon.weapon_name == data["weapon_name"]).all()
 
-        if len(included_parts) == 0:
-            new_weapon = Weapon(
-                weapon_name = data["weapon_name"],
-                category = data["category"],
-            )
+            if len(included_parts) == 0:
+                new_weapon = Weapon(
+                    weapon_name = data["weapon_name"],
+                    category = data["category"],
+                )
 
-            db.session.add(new_weapon)
+                db.session.add(new_weapon)
 
         new_trade = Trade(
             country_from=data['country_from'],
             country_to=data['country_to'],
-            weapon_name=data['weapon_name'],
-            amount=data['amount'],
+            weapon_name=get_or_none(data, 'weapon_name'),
+            amount=get_or_none(data, 'amount'),
             trade_start=parse_date(data['trade_start']),
             trade_end=parse_date(data['trade_end'])
         )
