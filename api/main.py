@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import json
 from datetime import datetime
+import hashlib
+import random
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:docker@postgres/hh"
@@ -42,26 +45,15 @@ class Weapon(db.Model):
         self.weapon_name = weapon_name
         self.category = category
 
-class Conflict(db.Model):
-    __tablename__ = 'conflicts'
+class Api(db.Model):
+    __tablename__ = 'api'
 
-    id = db.Column(db.Integer, primary_key=True)
-    country = db.Column(db.String())
-    info = db.Column(db.String())
-    date_start = db.Column(db.Date())
-    date_end = db.Column(db.Date())
-    picture_url = db.Column(db.String())
-    verified = db.Column(db.Boolean())
-    source = db.Column(db.String())
+    key = db.Column(db.String(), primary_key=True)
+    email = db.Column(db.String())
 
-    def __init__(self, country, info, date_start, date_end, picture_url, verified, source):
-        self.country = country
-        self.info = info
-        self.date_start = date_start
-        self.date_end = date_end
-        self.picture_url = picture_url
-        self.verified = verified
-        self.source = source
+    def __init__(self, email):
+        self.email = email
+        self.key = hashlib.md5(hex(random.randint(0,1000000000000000000))).hexdigest()
 
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
@@ -148,26 +140,16 @@ def query_trade():
 
     return "need json"
 
-@app.route('/api/add_conflict', methods=['POST'])
-def add_conflict():
+@app.route('/api/generate', methods=['POST'])
+def generate():
     if request.is_json:
         data = request.get_json()
-
-        new_trade = Conflict(
-            country=data['country'],
-            info=data['info'],
-            date_start=parse_date(data['date_start']),
-            date_end=parse_date(data['date_end']),
-            picture_url=get_or_none(data, 'picture_url'),
-            verified=False,
-            source=data['source'],
-        )
-
-        db.session.add(new_trade)
+        new_key = Api(data['email'])
+        db.session.add(new_key)
         db.session.commit()
-        return "Added"
-
+        return new_key.key
     return "Expected JSON"
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
