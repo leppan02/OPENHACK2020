@@ -111,7 +111,7 @@ def query_trade():
     if request.is_json:
         data = request.get_json()
 
-        trades = db.session.query(
+        tradesq = db.session.query(
             Trade.country_from,
             Trade.country_to,
             Trade.weapon_name,
@@ -120,7 +120,15 @@ def query_trade():
             Trade.trade_end,
             Trade.is_verified,
             Trade.source,
-        ).filter(Trade.country_from == data["country_from"]).all()
+        ).filter(Trade.country_from == data["country_from"])
+
+        if "trade_start" in data:
+            tradesq = tradesq.filter(Trade.trade_start > parse_date(data["trade_start"]))
+
+        if "trade_end" in data:
+            tradesq = tradesq.filter(Trade.trade_end < parse_date(data["trade_end"]))
+
+        trades = tradesq.all()
 
         trades_struct = [
             {
