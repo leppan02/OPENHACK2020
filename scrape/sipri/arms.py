@@ -1,6 +1,7 @@
 import requests
 from urllib.parse import quote
 
+
 def urlencode_withoutplus(query):
     if hasattr(query, 'items'):
         query = query.items()
@@ -11,7 +12,8 @@ def urlencode_withoutplus(query):
         l.append(k + '=' + v)
     return '&'.join(l)
 
-def get_rtf(country_code='SWE', year=2019, id=1): 
+
+def get_rtf(country_code='SWE', year=2019, id=1):
     url = 'https://armstrade.sipri.org/armstrade/html/export_trade_register.php'
 
     headers = {
@@ -25,7 +27,7 @@ def get_rtf(country_code='SWE', year=2019, id=1):
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "Sec-Fetch-Site": "same-origin",
-        "Sec-Fetch-Mode": "navigate", 
+        "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-User": "?1",
         "Sec-Fetch-Dest": "document",
         "Referer": "https://armstrade.sipri.org/armstrade/page/trade_register.php",
@@ -43,12 +45,12 @@ def get_rtf(country_code='SWE', year=2019, id=1):
         "armament_category_id": str(id),
         "buyers_or_sellers": "sellers",
         "filetype": "rtf",
-        "sum_deliveries": "on", 
+        "sum_deliveries": "on",
         "Submit4": "Download"
     }
 
     r = requests.post(url, data=urlencode_withoutplus(data), headers=headers)
-    if b'<!DOCTYPE html' in r.content: 
+    if b'<!DOCTYPE html' in r.content:
         return False
     else:
         return r.content
@@ -58,19 +60,17 @@ def parse(data, country):
     lines = data.split('{\\b     }')
 
     suppliers = []
-    for line in lines: 
-        data = line.replace('\\par{', '').replace('\\b', '').replace('R:}', '').replace('{ '+country+'}', '').split('\\tab')
+    for line in lines:
+        data = line.replace('\\par{', '').replace('\\b', '').replace(
+            'R:}', '').replace('{ '+country+'}', '').split('\\tab')
         suppliers.append({
-            "Country": data[0].replace(' ', ''),
-            "Order": data[1],
-            "Designation": data[2], 
-            "Weapon": data[3],
-            "Year weapon of order": data[4].replace(' ', ''),
-            "Year delivery": data[5].replace(' ', '')
+            {'country_from': country, 'country_to': countryto, 'source': URL,
+                'trade_start': "{}-01-01".format(year), 'trade_end': "{}-01-01".format(year+1), 'api_key': key}
         })
-    print (suppliers)
+    return suppliers
 
-def get_country(country_code): 
+
+def get_country(country_code):
     mp = {
         "AFG": "Afghanistan",
         "AU": "African Union**",
@@ -339,6 +339,7 @@ def get_country(country_code):
     }
     return mp[country_code]
 
+
 if __name__ == "__main__":
     country_code = "USA"
     year = 2019
@@ -347,11 +348,13 @@ if __name__ == "__main__":
     country = get_country(country_code)
 
     text = get_rtf(country_code=country_code, year=year, id=id)
-    if text != False: 
+    if text != False:
         data = text.decode('utf8').split('\n')
+        ret = []
         for line in data:
             if country in line:
-                parse(line, country)
-
-    else: 
-        print ("Can't get data")
+                ret = parse(line, country)
+        for i in ret:
+            print(i)
+    else:
+        print("Can't get data")
