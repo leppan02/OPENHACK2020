@@ -39,7 +39,7 @@ def parse(country_code, key):
 
 def send(packages):
     if len(packages):
-        resp = requests.post('http://l-h.nu/api/add_trades',json=packages)
+        resp = requests.post('http://localhost/api/add_trades',json=packages)
         print("worked")
     
 if __name__ == "__main__":
