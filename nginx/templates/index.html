@@ -10,7 +10,7 @@
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
-    <script src="https://datamaps.github.io/scripts/0.5.8/datamaps.all.min.js"></script>
+    <script src="https://datamaps.github.io/scripts/0.5.8/datamaps.world.hires.min.js"></script>
     <h1>Working!</h1>
     <div style="position: relative; width: 1000px; height: 700px;">
         <div id="container" style="position: relative; width: 100%; height: 100%;"></div>
@@ -18,7 +18,9 @@
     </div>
 
     <script>
-        var trades
+        var trades = []
+        var mapping = {}
+        var countryfilter = {}
 
         window.onload = async function () {
             var map = new Datamap({
@@ -52,18 +54,34 @@
                 }
             });
 
-            let mapping = {}
-            for (geo of map.worldTopo.objects.world.geometries) {
-                mapping[geo.properties.name] = geo.id
+            geometries = map.worldTopo.objects.world.geometries
+            for (i = 0; i < geometries.length; i++) {
+                mapping[geometries[i].properties.name] = geometries[i].id
+            }
+
+            for ([full, code] in Object.entries(mapping)) {
+                countryfilter[code] = true
             }
 
             var url = new URL(document.location.origin + '/api/query_trade')
 
-            url.search = new URLSearchParams({"country_from": "Sweden"}).toString();
+            url.search = new URLSearchParams({ "country_from": "Sweden" }).toString();
 
             let response = await fetch(url);
+            let rawTrades = await response.json()
 
-            trades = await response.json()
+            for (var i = 0; i < rawTrades.length; i++) {
+                if (!(rawTrades[i].country_to in mapping)) {
+                    console.log(rawTrades[i].country_to + " not in mapping")
+                    continue
+                }
+                if (!(rawTrades[i].country_from in mapping)) {
+                    console.log(rawTrades[i].country_from + " not in mapping")
+                    continue
+                }
+
+                trades.push({ country_to: mapping[rawTrades[i].country_to], country_from: mapping[rawTrades[i].country_from], ...rawTrades[i] })
+            }
 
             map.arc([
                 {
@@ -72,6 +90,14 @@
                 }
             ]);
         }
+
+        async function updateArcs() {
+            for (trade in trades) {
+
+            }
+        }
+
+
     </script>
 </body>
 
