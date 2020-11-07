@@ -1,13 +1,13 @@
 import requests
-import urllib2
+from urllib.parse import quote
 
 def urlencode_withoutplus(query):
     if hasattr(query, 'items'):
         query = query.items()
     l = []
     for k, v in query:
-        k = urllib2.quote(str(k), safe=' /+')
-        v = urllib2.quote(str(v), safe=' /+')
+        k = quote(str(k), safe=' /+')
+        v = quote(str(v), safe=' /+')
         l.append(k + '=' + v)
     return '&'.join(l)
 
@@ -48,7 +48,7 @@ def get_rtf(country_code='SWE', year=2019, id=1):
     }
 
     r = requests.post(url, data=urlencode_withoutplus(data), headers=headers)
-    if "<!DOCTYPE html" in r.content: 
+    if b'<!DOCTYPE html' in r.content: 
         return False
     else:
         return r.content
@@ -340,7 +340,7 @@ def get_country(country_code):
     return mp[country_code]
 
 if __name__ == "__main__":
-    country_code = "SWE"
+    country_code = "USA"
     year = 2019
     id = 4
 
@@ -348,14 +348,10 @@ if __name__ == "__main__":
 
     text = get_rtf(country_code=country_code, year=year, id=id)
     if text != False: 
-        open('test.rtf', 'wb').write(text)
-
-        f = open('test.rtf', 'r')
-        data = f.readlines() 
+        data = text.decode('utf8').split('\n')
         for line in data:
             if country in line:
                 parse(line, country)
 
-        f.close()
     else: 
         print ("Can't get data")
