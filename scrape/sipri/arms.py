@@ -1,4 +1,5 @@
 import requests
+from weapon_code import  *
 from urllib.parse import quote
 from country_code import get_country
 URL = 'https://armstrade.sipri.org/armstrade/html/export_trade_register.php'
@@ -54,26 +55,19 @@ def get_rtf(country_code='SWE', year=2019, id=1):
     else:
         return r.content
 
-def parsedate(date):
-    if date == '':
-        return {'ignore': 1}
-    if '-' in date:
-        return {'trade_start':"{}-01-01".format(date.split('-')[0]), 'trade_end': "{}-01-01".format(date.split('-')[1])}
-    return {'trade_start':"{}-01-01".format(date.replace('(', '').replace(')', '')), 'trade_end': "{}-01-01".format(1+int(date.replace('(', '').replace(')', '')))}
 
-def parse(data, country, key, weapon_type):
+def parse(data, country, key, weapon_type,year):
     lines = data.split('{\\b     }')
 
     suppliers = []
     last = ''
     for line in lines: 
         data = line.replace('\\par{', '').replace('\\b', '').replace('R:}', '').replace('{ '+country+'}', '').split('\\tab')
-        cur = {'country_from':country,'country_to':data[0].replace(' ', ''), 'source': URL, 'api_key':key, 'weapon_name': weapon_type}
+        cur = {'country_from':country,'country_to':data[0].replace(' ', ''), 'source': URL, 'api_key':key, 'weapon_name': get_weapon(weapon_type),'trade_start':"{}-01-01".format(year), 'trade_end': "{}-01-01".format(year+1)}
         if cur['country_to'] == '':
             cur['country_to'] = last
         else: 
             last = cur['country_to']
-        cur.update(parsedate(data[5].replace(' ', '')))
         if 'ignore' not in cur:
             suppliers.append(cur)
     return suppliers
@@ -93,7 +87,7 @@ if __name__ == "__main__":
         ret = []
         for line in data:
             if country in line:
-                ret = parse(line, country,key ,id)
+                ret = parse(line, country,key ,id, year)
         for i in ret:
             print(i)
     else: 
