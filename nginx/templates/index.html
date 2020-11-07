@@ -13,7 +13,6 @@
     <script src="https://datamaps.github.io/scripts/0.5.8/datamaps.world.hires.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js">
     </script>
-    <h1>Working!</h1>
     <div style="position: relative; width: 1000px; height: 700px;">
         <div id="container" style="position: relative; width: 100%; height: 100%;"></div>
         <input type="range" min="1" max="100" value="50" class="slider" style="width: 100%;">
@@ -24,7 +23,7 @@
         var trades = []
         var mapping = {}
         var reverseMapping = {}
-        var countryFilter = {}
+        // var countryFilter = {}
         var fetchedCountry = {}
 
         window.onload = async function () {
@@ -34,9 +33,9 @@
                 done: function (datamap) {
                     datamap.svg.selectAll('.datamaps-subunit').on('click', async function (geography) {
                         console.log(geography)
-                        countryFilter[geography.id] ^= 1
+                        // countryFilter[geography.id] ^= 1
                         await fetchAndProcessCountry(geography.id)
-                        await updateArcs()
+                        await updateArcs(geography.id)
                     });
                 },
                 arcConfig: {
@@ -71,7 +70,7 @@
             reverseMapping["RUS"] = "Russia"
 
             for (countrymapping in mapping) {
-                countryFilter[mapping[countrymapping]] = 0
+                // countryFilter[mapping[countrymapping]] = 0
                 fetchedCountry[mapping[countrymapping]] = false
             }
 
@@ -104,10 +103,10 @@
             fetchedCountry[countryCode] = true
         }
 
-        async function updateArcs() {
+        async function updateArcs(countryCode) {
             let arcs = []
             for (trade in trades) {
-                if (countryFilter[trades[trade].country_from] || countryFilter[trades[trade].country_to]) {
+                if (trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) {
                     Math.seedrandom(trades[trade])
                     arcs.push({
                         origin: trades[trade].country_from,
