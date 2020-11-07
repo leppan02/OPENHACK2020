@@ -81,11 +81,15 @@ def add_trades():
 
     return "Expected JSON"
 
-@app.route('/api/query_trade_from', methods=['GET'])
-def query_trade_from():
-    country_from = request.args.get('country_from')
+@app.route('/api/query_trade', methods=['GET'])
+def query_trade():
+    country_from = request.args.get('country_from') # Optional
+    country_to = request.args.get('country_to') # Optional
     start = request.args.get('trade_start') # Optional
     end = request.args.get('trade_end') # Optional
+
+    if country_from is None and country_to is None:
+        return "give either country_from or country_to"
 
     tradesq = db.session.query(
         Trade.country_from,
@@ -96,48 +100,12 @@ def query_trade_from():
         Trade.trade_end,
         Trade.is_verified,
         Trade.source,
-    ).filter(Trade.country_from == country_from)
+    )
+    if country_from != None:
+        tradesq = tradesq.filter(Trade.country_from == country_from)
 
-    if start != None:
-        tradesq = tradesq.filter(Trade.trade_start > parse_date(start))
-
-    if end != None:
-        tradesq = tradesq.filter(Trade.trade_end < parse_date(end))
-
-    trades = tradesq.all()
-
-    trades_struct = [
-        {
-            "country_from": trade[0],
-            "country_to":   trade[1],
-            "weapon_name":  trade[2],
-            "amount":       trade[3],
-            "trade_start":  datetime.strftime(trade[4], "%Y-%m-%d"),
-            "trade_end":    datetime.strftime(trade[5], "%Y-%m-%d"),
-            "is_verified":  trade[6],
-            "source":       trade[7],
-        }
-        for trade in trades
-    ]
-
-    return json.dumps(trades_struct)
-
-@app.route('/api/query_trade_to', methods=['GET'])
-def query_trade_to():
-    country_to = request.args.get('country_to')
-    start = request.args.get('trade_start') # Optional
-    end = request.args.get('trade_end') # Optional
-
-    tradesq = db.session.query(
-        Trade.country_from,
-        Trade.country_to,
-        Trade.weapon_name,
-        Trade.amount,
-        Trade.trade_start,
-        Trade.trade_end,
-        Trade.is_verified,
-        Trade.source,
-    ).filter(Trade.country_to == country_to)
+    if country_to != None:
+        tradesq = tradesq.filter(Trade.country_to == country_to)
 
     if start != None:
         tradesq = tradesq.filter(Trade.trade_start > parse_date(start))
