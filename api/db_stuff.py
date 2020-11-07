@@ -70,15 +70,15 @@ class Conflict(db.Model):
     country = db.Column(db.String())
     data = db.Column(db.String())
     picture = db.Column(db.String())
-    date= db.Column(db.Date())
+    date_start = db.Column(db.Date())
     is_verified = db.Column(db.Boolean())
     source = db.Column(db.String())
 
-    def __init__(self, api_key, country, data, picture, date, is_verified, source):
+    def __init__(self, api_key, country, data, picture, date_start, is_verified, source):
         self.api_key = api_key
         self.country = country
         self.data = data
         self.picture = picture
-        self.date = date
+        self.date_start = date
         self.is_verified = is_verified
         self.source = source
