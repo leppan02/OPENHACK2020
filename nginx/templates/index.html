@@ -57,7 +57,12 @@
                 mapping[geo.properties.name] = geo.id
             }
 
-            let response = await fetch("http://localhost/api/query_trade")
+            var url = new URL(document.location.origin + '/api/query_trade')
+
+            url.search = new URLSearchParams({"country_from": "Sweden"}).toString();
+
+            let response = await fetch(url);
+
             trades = await response.json()
 
             map.arc([
