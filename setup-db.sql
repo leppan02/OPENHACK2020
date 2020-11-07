@@ -22,7 +22,6 @@ CREATE TABLE conflicts (
     country varchar(500) NOT NULL,
     info varchar(5000) NOT NULL,
     date_start DATE,
-    date_end DATE,
     picture_url varchar(5000),
     verified boolean NOT NULL DEFAULT false,
     source varchar(500) NOT NULL,
@@ -34,3 +33,4 @@ CREATE TABLE api (
     email varchar(500) NOT NULL,
     full_name varchar(500) NOT NULL
 );
+
