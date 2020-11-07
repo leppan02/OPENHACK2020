@@ -32,7 +32,8 @@ def verify_api_key(key):
 def add_trade():
     if request.is_json:
         data = request.get_json()
-
+        if not verify_api_key(data['api_key']):
+            return 'Exception invalid api_key.'
         if "weapon_name" in data:
             print("a")
             included_parts = db.session.query(
