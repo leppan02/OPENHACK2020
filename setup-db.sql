@@ -7,12 +7,14 @@ CREATE TABLE trades (
     trade_start DATE,
     trade_end DATE,
     is_verified boolean NOT NULL DEFAULT false,
-    source varchar(500) NOT NULL
+    source varchar(500) NOT NULL,
+    api_key varchar(50) NOT NULL
 );
 
 CREATE TABLE weapons (
     weapon_name varchar(500) PRIMARY KEY NOT NULL,
-    category varchar(500)
+    category varchar(500),
+    api_key varchar(50) NOT NULL
 );
 
 CREATE TABLE conflicts (
@@ -23,10 +25,12 @@ CREATE TABLE conflicts (
     date_end DATE,
     picture_url varchar(5000),
     verified boolean NOT NULL DEFAULT false,
-    source varchar(500) NOT NULL
+    source varchar(500) NOT NULL,
+    api_key varchar(50) NOT NULL
 );
 
 CREATE TABLE api (
-    key varchar(500) NOT NULL PRIMARY KEY,
-    email varchar(500) NOT NULL
+    api_key varchar(500) NOT NULL PRIMARY KEY,
+    email varchar(500) NOT NULL,
+    full_name varchar(500) NOT NULL
 );
