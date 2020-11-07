@@ -89,7 +89,7 @@ def send(packages):
 def run(key, country_code):
     for year in range(2000, 2020):
         ids = [1,2,3,4,5,6,7,11,12,13,14]
-        for i in ids[5:]:
+        for i in ids[3:]:
             print(year, country_code)
             try:
                 country = get_country(country_code)
