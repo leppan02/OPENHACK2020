@@ -70,6 +70,7 @@ def parse(data, country, key, weapon_type,year):
             last = cur['country_to']
         if 'ignore' not in cur:
             suppliers.append(cur)
+        print(data[6])
     return suppliers
 
 
