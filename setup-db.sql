@@ -5,7 +5,8 @@ CREATE TABLE trades (
     weapon_name varchar(500),
     amount INT,
     trade_start DATE,
-    trade_end DATE
+    trade_end DATE,
+    source varchar(500) NOT NULL
 );
 
 CREATE TABLE weapons (

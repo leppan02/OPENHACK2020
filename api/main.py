@@ -19,14 +19,16 @@ class Trade(db.Model):
     amount = db.Column(db.Integer())
     trade_start = db.Column(db.Date())
     trade_end = db.Column(db.Date())
+    source = db.Column(db.String())
 
-    def __init__(self, country_from, country_to, weapon_name, amount, trade_start, trade_end): 
+    def __init__(self, country_from, country_to, weapon_name, amount, trade_start, trade_end, source): 
         self.country_from = country_from
         self.country_to = country_to
         self.weapon_name = weapon_name
         self.amount = amount
         self.trade_start = trade_start
         self.trade_end = trade_end
+        self.source = source
 
 class Weapon(db.Model):
     __tablename__ = 'weapons'
@@ -70,7 +72,8 @@ def add_trade():
             weapon_name=get_or_none(data, 'weapon_name'),
             amount=get_or_none(data, 'amount'),
             trade_start=parse_date(data['trade_start']),
-            trade_end=parse_date(data['trade_end'])
+            trade_end=parse_date(data['trade_end']),
+            source=data['source'],
         )
 
         db.session.add(new_trade)
@@ -81,7 +84,11 @@ def add_trade():
 
 @app.route('/api/query_trade', methods=['GET'])
 def query_trade():
-    # TODO
+    # Parameters:
+    #   country_from: string
+    #   date_start: "YYYY-mm-dd"
+    #   date_end: "YYYY-mm-dd"
+
     return json.dumps([{
         "id": 75,
         "country_from": "Sweden",
@@ -91,6 +98,7 @@ def query_trade():
         "amount": 55,
         "trade_start": "2020-11-07",
         "trade_end": "2020-11-09",
+        "source": "din-mamma.se/info.html.zip",
     }])
 
 if __name__ == "__main__":
