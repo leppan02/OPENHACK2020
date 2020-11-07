@@ -12,45 +12,61 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
     <script src="https://datamaps.github.io/scripts/0.5.8/datamaps.all.min.js"></script>
     <h1>Working!</h1>
-    <div id="container" style="position: relative; width: 1000px; height: 700px;"></div>
+    <div style="position: relative; width: 1000px; height: 700px;">
+        <div id="container" style="position: relative; width: 100%; height: 100%;"></div>
+        <input type="range" min="1" max="100" value="50" class="slider" style="width: 100%;">
+    </div>
+
     <script>
-        var map = new Datamap({
-            element: document.getElementById("container"),
-            projection: "mercator",
-            done: function (datamap) {
-                datamap.svg.selectAll('.datamaps-subunit').on('click', function (geography) {
-                    console.log(geography);
-                });
-            },
-            arcConfig: {
-                strokeColor: '#DD1C77',
-                strokeWidth: 2,
-                arcSharpness: 1,
-                animationSpeed: 600, // Milliseconds
-                popupOnHover: true, // True to show the popup while hovering
-                popupTemplate: function (geography, data) { // This function should just return a string
-                    // Case with latitude and longitude
-                    if ((data.origin && data.destination) && data.origin.latitude && data.origin.longitude && data.destination.latitude && data.destination.longitude) {
-                        return '<div class="hoverinfo"><strong>Arc</strong><br>Origin: ' + JSON.stringify(data.origin) + '<br>Destination: ' + JSON.stringify(data.destination) + '</div>';
-                    }
-                    // Case with only country name
-                    else if (data.origin && data.destination) {
-                        return '<div class="hoverinfo"><strong>Arc</strong><br>' + data.origin + ' -> ' + data.destination + '</div>';
-                    }
-                    // Missing information
-                    else {
-                        return '';
+        var trades
+
+        window.onload = async function () {
+            var map = new Datamap({
+                element: document.getElementById("container"),
+                projection: "mercator",
+                done: function (datamap) {
+                    datamap.svg.selectAll('.datamaps-subunit').on('click', function (geography) {
+                        console.log(geography);
+                    });
+                },
+                arcConfig: {
+                    strokeColor: '#DD1C77',
+                    strokeWidth: 2,
+                    arcSharpness: 1,
+                    animationSpeed: 600, // Milliseconds
+                    popupOnHover: true, // True to show the popup while hovering
+                    popupTemplate: function (geography, data) { // This function should just return a string
+                        // Case with latitude and longitude
+                        if ((data.origin && data.destination) && data.origin.latitude && data.origin.longitude && data.destination.latitude && data.destination.longitude) {
+                            return '<div class="hoverinfo"><strong>Arc</strong><br>Origin: ' + JSON.stringify(data.origin) + '<br>Destination: ' + JSON.stringify(data.destination) + '</div>';
+                        }
+                        // Case with only country name
+                        else if (data.origin && data.destination) {
+                            return '<div class="hoverinfo"><strong>Arc</strong><br>' + data.origin + ' -> ' + data.destination + '</div>';
+                        }
+                        // Missing information
+                        else {
+                            return '';
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        map.arc([
-            {
-                origin: 'SWE',
-                destination: 'AFG'
+            let mapping = {}
+            for (geo of map.worldTopo.objects.world.geometries) {
+                mapping[geo.properties.name] = geo.id
             }
-        ]);
+
+            let response = await fetch("http://localhost/api/query_trade")
+            trades = await response.json()
+
+            map.arc([
+                {
+                    origin: 'SWE',
+                    destination: 'AFG'
+                }
+            ]);
+        }
     </script>
 </body>
 
