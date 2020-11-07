@@ -15,4 +15,3 @@ CREATE TABLE weapons (
     weapon_name varchar(500) PRIMARY KEY NOT NULL,
     category varchar(500),
 );
-

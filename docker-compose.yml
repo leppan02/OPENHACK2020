@@ -10,6 +10,7 @@ services:
     image: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./setup-db.sql:/docker-entrypoint-initdb.d/stuff.sql
     ports:
       - "127.0.0.1:5432:5432"
     environment:
