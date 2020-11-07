@@ -8,6 +8,7 @@ import random
 
 from db_stuff import *
 
+NEED_API_KEY = False
 
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
@@ -20,13 +21,12 @@ def get_or_none(data, field):
 
 def verify_api_key(key):
     has_key = db.session.query(
-        Api.key,
-    ).filter(Api.key == key).all()
+        Api.api_key,
+    ).filter(Api.api_key == key).all()
     if has_key:
         return True
     else:
-        return False
-
+        return not NEED_API_KEY
 
 @app.route('/api/add_trade', methods=['POST'])
 def add_trade():
