@@ -33,6 +33,7 @@
                 projection: "mercator",
                 done: function (datamap) {
                     datamap.svg.selectAll('.datamaps-subunit').on('click', async function (geography) {
+                        console.log(geography)
                         countryFilter[geography.id] ^= 1
                         await fetchAndProcessCountry(geography.id)
                         await updateArcs()
@@ -40,7 +41,7 @@
                 },
                 arcConfig: {
                     strokeColor: '#DD1C7760',
-                    strokeWidth: 2,
+                    strokeWidth: 1,
                     arcSharpness: 1,
                     animationSpeed: 1500, // Milliseconds
                     popupOnHover: true, // True to show the popup while hovering
@@ -66,6 +67,8 @@
                 mapping[geometries[i].properties.name] = geometries[i].id
                 reverseMapping[geometries[i].id] = geometries[i].properties.name
             }
+            mapping["Russia"] = "RUS"
+            reverseMapping["RUS"] = "Russia"
 
             for (countrymapping in mapping) {
                 countryFilter[mapping[countrymapping]] = 0
