@@ -8,7 +8,7 @@ import random
 
 from db_stuff import *
 
-NEED_API_KEY = False
+NEED_API_KEY = True
 
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
@@ -52,6 +52,19 @@ def add_trade(data):
             )
 
             db.session.add(new_weapon)
+
+    matches = db.session.query(
+        Trade.id,
+    ).filter(
+        Trade.country_from==data['country_from'],
+        Trade.country_to==data['country_to'],
+        Trade.weapon_name==get_or_none(data, 'weapon_name'),
+        Trade.amount==get_or_none(data, 'amount'),
+        Trade.trade_start==parse_date(data['trade_start']),
+        Trade.source==data['source'],
+    ).all()
+    if matches != []:
+        print("Duplicate")
 
     new_trade = Trade(
         country_from=data['country_from'],
@@ -101,6 +114,7 @@ def query_trade():
         Trade.is_verified,
         Trade.source,
     )
+
     if country_from != None:
         tradesq = tradesq.filter(Trade.country_from == country_from)
 
