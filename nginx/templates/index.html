@@ -18,21 +18,26 @@
     </div>
 
     <script>
+        var map;
         var trades = []
         var mapping = {}
-        var countryfilter = {}
+        var reverseMapping = {}
+        var countryFilter = {}
+        var fetchedCountry = {}
 
         window.onload = async function () {
-            var map = new Datamap({
+            map = new Datamap({
                 element: document.getElementById("container"),
                 projection: "mercator",
                 done: function (datamap) {
-                    datamap.svg.selectAll('.datamaps-subunit').on('click', function (geography) {
-                        console.log(geography);
+                    datamap.svg.selectAll('.datamaps-subunit').on('click', async function (geography) {
+                        countryFilter[geography.id] ^= 1
+                        await fetchAndProcessCountry(geography.id)
+                        await updateArcs()
                     });
                 },
                 arcConfig: {
-                    strokeColor: '#DD1C77',
+                    strokeColor: '#DD1C7760',
                     strokeWidth: 2,
                     arcSharpness: 1,
                     animationSpeed: 600, // Milliseconds
@@ -57,15 +62,24 @@
             geometries = map.worldTopo.objects.world.geometries
             for (i = 0; i < geometries.length; i++) {
                 mapping[geometries[i].properties.name] = geometries[i].id
+                reverseMapping[geometries[i].id] = geometries[i].properties.name
             }
 
-            for ([full, code] in Object.entries(mapping)) {
-                countryfilter[code] = true
+            for (countrymapping in mapping) {
+                countryFilter[mapping[countrymapping]] = 0
+                fetchedCountry[mapping[countrymapping]] = false
             }
 
+            await fetchAndProcessCountry("SWE")
+
+            await updateArcs()
+        }
+
+        async function fetchAndProcessCountry(countryCode) {
+            if (fetchedCountry[countryCode]) return
             var url = new URL(document.location.origin + '/api/query_trade')
 
-            url.search = new URLSearchParams({ "country_from": "Sweden" }).toString();
+            url.search = new URLSearchParams({ "country_from": reverseMapping[countryCode] }).toString();
 
             let response = await fetch(url);
             let rawTrades = await response.json()
@@ -80,21 +94,23 @@
                     continue
                 }
 
-                trades.push({ country_to: mapping[rawTrades[i].country_to], country_from: mapping[rawTrades[i].country_from], ...rawTrades[i] })
+                trades.push({ ...rawTrades[i], country_to: mapping[rawTrades[i].country_to], country_from: mapping[rawTrades[i].country_from] })
             }
-
-            map.arc([
-                {
-                    origin: 'SWE',
-                    destination: 'AFG'
-                }
-            ]);
+            fetchedCountry[countryCode] = true
         }
 
         async function updateArcs() {
+            let arcs = []
             for (trade in trades) {
+                if (countryFilter[trades[trade].country_from] || countryFilter[trades[trade].country_to]) {
+                    arcs.push({
+                        origin: trades[trade].country_from,
+                        destination: trades[trade].country_to,
+                    })
+                }
 
             }
+            map.arc(arcs)
         }
 
 
