@@ -63,7 +63,7 @@ class Api(db.Model):
 
 
 class Conflict(db.Model):
-    __tablename__ = 'api'
+    __tablename__ = 'conflicts'
 
     id = db.Column(db.String(), primary_key=True)
     api_key = db.Column(db.String())
