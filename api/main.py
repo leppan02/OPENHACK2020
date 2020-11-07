@@ -8,12 +8,16 @@ import random
 
 from db_stuff import *
 
+
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
+
 
 def get_or_none(data, field):
     if field in data:
         return data[field]
+
+
 def verify_api_key(key):
     has_key = db.session.query(
         Api.key,
@@ -22,6 +26,7 @@ def verify_api_key(key):
         return True
     else:
         return False
+
 
 @app.route('/api/add_trade', methods=['POST'])
 def add_trade():
@@ -36,8 +41,8 @@ def add_trade():
 
             if len(included_parts) == 0:
                 new_weapon = Weapon(
-                    weapon_name = data["weapon_name"],
-                    category = data["category"],
+                    weapon_name=data["weapon_name"],
+                    category=data["category"],
                 )
 
                 db.session.add(new_weapon)
@@ -60,6 +65,7 @@ def add_trade():
 
     return "Expected JSON"
 
+
 @app.route('/api/query_trade', methods=['GET'])
 def query_trade():
     if request.is_json:
@@ -77,10 +83,12 @@ def query_trade():
         ).filter(Trade.country_from == data["country_from"])
 
         if "trade_start" in data:
-            tradesq = tradesq.filter(Trade.trade_start > parse_date(data["trade_start"]))
+            tradesq = tradesq.filter(
+                Trade.trade_start > parse_date(data["trade_start"]))
 
         if "trade_end" in data:
-            tradesq = tradesq.filter(Trade.trade_end < parse_date(data["trade_end"]))
+            tradesq = tradesq.filter(
+                Trade.trade_end < parse_date(data["trade_end"]))
 
         trades = tradesq.all()
 
@@ -102,6 +110,7 @@ def query_trade():
 
     return "Expected JSON"
 
+
 @app.route('/api/generate', methods=['POST'])
 def generate():
     #{full_name:..., email:...}
@@ -112,6 +121,7 @@ def generate():
         db.session.commit()
         return new_key.key
     return "Expected JSON"
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
