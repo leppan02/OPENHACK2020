@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+<style>
+
+body {
+    background-color: #ccdddd;
+    color: #333333;
+    padding-top: 3em;
+    padding-left: 20%;
+    padding-right: 20%;
+    font-family: Arial;
+    font-weight: lighter;
+}
+
+input {
+    font-family:  Lucida Console;
+    width: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+}
+
+label {
+    margin-top: 1em;
+    display: block;
+    font-size: 15pt;
+}
+
+#cols {
+    display: flex;
+    flex-direction: horizontal;
+    justify-content: space-between;
+}
+
+.right {
+    text-align: right;
+}
+
+.col {
+    max-width: 45%;
+}
+
+</style>
+
+</head>
+
+<body>
+    <h1 style="text-align: right">Admin Panel</h1>
+    <main>
+        <div id="inputs">
+            <input id="apikey" type="text" placeholder="API KEY">
+            <label for="action_selector">Action to do:</label>
+            <select name="action" id="action_selector" onchange="select_mode()">
+                <option value="add_trade">Add Trade to the Database</option>
+                <option value="remove_trade">Remove Trade from the Database</option>
+            </select>
+
+            <hr style="width: 100%;">
+
+            <div id="fields">
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+var req_mode;
+var req_url;
+
+function select_mode() {
+    var new_mode = document.getElementById("action_selector").value;
+
+    if (new_mode == "add_trade") {
+        req_mode = "POST";
+        req_url = "/api/add_trade";
+
+        document.getElementById("fields").innerHTML = `
+<div id="cols">
+    <div class="col">
+        <label for="country_from">Country selling:</label>
+        <input type="text" placeholder="Germany" id="country_from">
+
+        <label for="country_to">Country purchasing:</label>
+        <input type="text" placeholder="United States" id="country_to">
+
+        <label for="category">Weapon category (optional, leave empty):</label>
+        <input type="text" placeholder="Knife" id="category">
+    </div>
+
+    <div class="col right">
+        <label for="weapon_name">Weapon name (optional, leave empty):</label>
+        <input type="text" placeholder="Butter knife" id="weapon_name">
+
+        <label for="trade_start">Start of trade period:</label>
+        <input type="date" id="trade_start">
+
+        <label for="trade_end">End of trade period:</label>
+        <input type="date" id="trade_end">
+    </div>
+</div>
+
+<label for="submit">Done:</label>
+<input type="button" id="submit" value="Submit">
+`;
+    }
+    if (new_mode == "remove_trade") {
+        req_mode = "POST";
+        req_url = "/api/add_trade";
+    }
+}
+
+select_mode();
+
+</script>
+
+</html>
