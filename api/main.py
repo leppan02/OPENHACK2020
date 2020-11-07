@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import json
 from datetime import datetime
 
 app = Flask(__name__)
@@ -81,7 +82,7 @@ def add_trade():
 @app.route('/api/query_trade', methods=['GET'])
 def query_trade():
     # TODO
-    return [{
+    return json.dumps([{
         "id": 75,
         "country_from": "Sweden",
         "country_to": "Vatican State",
@@ -90,7 +91,7 @@ def query_trade():
         "amount": 55,
         "trade_start": "2020-11-07",
         "trade_end": "2020-11-09",
-    }]
+    }])
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
