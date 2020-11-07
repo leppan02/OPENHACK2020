@@ -1,6 +1,3 @@
-CREATE DATABASE hh;
-CONNECT TO hh;
-
 CREATE TABLE trades (
     id SERIAL PRIMARY KEY,
     country_from varchar(500),
@@ -13,5 +10,5 @@ CREATE TABLE trades (
 
 CREATE TABLE weapons (
     weapon_name varchar(500) PRIMARY KEY NOT NULL,
-    category varchar(500),
+    category varchar(500)
 );
