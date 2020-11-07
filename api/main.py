@@ -19,15 +19,17 @@ class Trade(db.Model):
     amount = db.Column(db.Integer())
     trade_start = db.Column(db.Date())
     trade_end = db.Column(db.Date())
+    is_verified = db.Column(db.Boolean())
     source = db.Column(db.String())
 
-    def __init__(self, country_from, country_to, weapon_name, amount, trade_start, trade_end, source): 
+    def __init__(self, country_from, country_to, weapon_name, amount, trade_start, trade_end, is_verified, source): 
         self.country_from = country_from
         self.country_to = country_to
         self.weapon_name = weapon_name
         self.amount = amount
         self.trade_start = trade_start
         self.trade_end = trade_end
+        self.is_verified = is_verified
         self.source = source
 
 class Weapon(db.Model):
@@ -73,6 +75,7 @@ def add_trade():
             amount=get_or_none(data, 'amount'),
             trade_start=parse_date(data['trade_start']),
             trade_end=parse_date(data['trade_end']),
+            is_verified=False,
             source=data['source'],
         )
 

@@ -6,6 +6,7 @@ CREATE TABLE trades (
     amount INT,
     trade_start DATE,
     trade_end DATE,
+    is_verified boolean NOT NULL,
     source varchar(500) NOT NULL
 );
 
