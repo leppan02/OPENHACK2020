@@ -131,7 +131,7 @@ def generate():
         new_key = Api(data['email'], data['full_name'])
         db.session.add(new_key)
         db.session.commit()
-        return new_key.key
+        return new_key.api_key
     return "Expected JSON"
 
 

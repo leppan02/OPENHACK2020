@@ -58,8 +58,7 @@ class Api(db.Model):
     def __init__(self, full_name, email):
         self.email = email
         self.full_name = full_name
-        self.api_key = hashlib.md5(
-            hex(random.randint(0, 1000000000000000000))).hexdigest()
+        self.api_key = hashlib.md5(hex(random.randint(0, 1000000000000000000)).encode()).hexdigest()
 
 
 class Conflict(db.Model):
