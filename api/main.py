@@ -29,43 +29,57 @@ def verify_api_key(key):
         return not NEED_API_KEY
 
 @app.route('/api/add_trade', methods=['POST'])
-def add_trade():
+def add_trade_endpoint():
     if request.is_json:
-        data = request.get_json()
-        if not verify_api_key(data['api_key']):
-            return 'Exception invalid api_key.'
-        if "weapon_name" in data:
-            print("a")
-            included_parts = db.session.query(
-                Weapon.weapon_name,
-            ).filter(Weapon.weapon_name == data["weapon_name"]).all()
-
-            if len(included_parts) == 0:
-                new_weapon = Weapon(
-                    weapon_name=data["weapon_name"],
-                    category=data["category"],
-                )
-
-                db.session.add(new_weapon)
-
-        new_trade = Trade(
-            country_from=data['country_from'],
-            api_key=data['api_key'],
-            country_to=data['country_to'],
-            weapon_name=get_or_none(data, 'weapon_name'),
-            amount=get_or_none(data, 'amount'),
-            trade_start=parse_date(data['trade_start']),
-            trade_end=parse_date(data['trade_end']),
-            is_verified=False,
-            source=data['source'],
-        )
-
-        db.session.add(new_trade)
-        db.session.commit()
-        return "Added"
+        return add_trade(request.json)
 
     return "Expected JSON"
 
+def add_trade(data):
+    if not verify_api_key(data['api_key']):
+        return 'Exception invalid api_key.'
+
+    if "weapon_name" in data:
+        print("a")
+        included_parts = db.session.query(
+            Weapon.weapon_name,
+        ).filter(Weapon.weapon_name == data["weapon_name"]).all()
+
+        if len(included_parts) == 0:
+            new_weapon = Weapon(
+                weapon_name=data["weapon_name"],
+                category=data["category"],
+            )
+
+            db.session.add(new_weapon)
+
+    new_trade = Trade(
+        country_from=data['country_from'],
+        api_key=data['api_key'],
+        country_to=data['country_to'],
+        weapon_name=get_or_none(data, 'weapon_name'),
+        amount=get_or_none(data, 'amount'),
+        trade_start=parse_date(data['trade_start']),
+        trade_end=parse_date(data['trade_end']),
+        is_verified=False,
+        source=data['source'],
+    )
+
+    db.session.add(new_trade)
+    db.session.commit()
+    return "Added"
+
+
+@app.route('/api/add_trades', methods=['POST'])
+def add_trades():
+    if request.is_json:
+        last_resp = None
+        for k in request.get_json():
+            last_resp = add_trade(k)
+
+        return last_resp
+
+    return "Expected JSON"
 
 @app.route('/api/query_trade', methods=['GET'])
 def query_trade():
