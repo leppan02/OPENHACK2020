@@ -3,6 +3,7 @@ from weapon_code import  *
 from urllib.parse import quote
 from country_code import get_country
 URL = 'https://armstrade.sipri.org/armstrade/html/export_trade_register.php'
+import threading 
 def urlencode_withoutplus(query):
     if hasattr(query, 'items'):
         query = query.items()
@@ -85,24 +86,31 @@ def send(packages):
         resp = requests.post('http://localhost/api/add_trades',json=packages)
         print("worked")
 
+def run(key, country_code):
+    for year in range(2000, 2020):
+        id = 4
+        print(year, country_code)
+        try:
+            country = get_country(country_code)
+            text = get_rtf(country_code=country_code, year=year, id=id)
+            if text != False: 
+                data = text.decode('utf8').split('\n')
+                ret = []
+                for line in data:
+                    if country in line:
+                        ret = parse(line, country,key ,id, year)
+                send(ret)
+        except KeyboardInterrupt:
+            raise
+        except:
+            print('bad name', country_code)
+
 if __name__ == "__main__":
     codes = ['AF', 'ALB', 'ALG', 'XLA', 'XSA', 'ANG', 'XCC', 'ARG', 'XGC', 'ARM', 'ARU', 'AUS', 'AST', 'AZB', 'BAS', 'BAH', 'BAN', 'BAR', 'BLR', 'BEL', 'BLZ', 'BEN', 'BHU', 'BIA', 'BOL', 'BOS', 'BOT', 'BRA', 'BRU', 'BUL', 'BF', 'BDI', 'CAP', 'CMB', 'CAM', 'CAN', 'CAR', 'CHA', 'CHE', 'CHI', 'COL', 'COM', 'CON', 'XNC', 'COS', 'IVO', 'CRO', 'CUB', 'CYP', 'CZR', 'CZE', 'XSD', 'DEN', 'DJI', 'DOM', 'DRC', 'GDR', 'ECU', 'EGY', 'XEE', 'SAL', 'XEP', 'EQU', 'ERI', 'EST', 'SWA', 'ETH', 'EU', 'EUR', 'XCF', 'FJI', 'FIN', 'XSF', 'XAF', 'FRA', 'XPR', 'GAB', 'GAM', 'GEO', 'FRG', 'GHA', 'GRE', 'GND', 'GUA', 'GUI', 'GBI', 'XCG', 'GUY', 'HAI', 'XHB', 'XPA', 'XLH', 'HON', 'XYH', 'HUN', 'ICE', 'IND', 'INS', 'XIR', 'IRA', 'IRQ', 'IRE', 'ISR', 'ITA', 'JAM', 'JAP', 'JOR', 'KAT', 'KAZ', 'KEN', 'XCR', 'KIR', 'KSV', 'KUW', 'KYR', 'LAO', 'LAT', 'LEB', 'XLP', 'LES', 'XLL', 'LIB', 'LYA', 'LYW', 'LYE', 'LIT', 'XUL', 'XSL', 'LUX', 'MAC', 'MAD', 'MWI', 'MAL', 'MLV', 'MLI', 'MTA', 'MAR', 'MRA', 'MAU', 'MEX', 'MIC', 'XPQ', 'MOL', 'MON', 'MTG', 'MOR', 'MOZ', 'XPM', 'XMX', 'XAM', 'MUL', 'MYA', 'NAM', 'NAT', 'NEP', 'NET', 'NZ', 'NIC', 'NIR', 'NIG', 'XMN', 'XAN', 'NCY', 'KON', 'YEN', 'NOR', 'XLB', 'OMA', 'OSC', 'XPP', 'PAK', 'PAL', 'PA', 'PAN', 'PAP', 'PAR', 'XLO', 'PER', 'PHI', 'XID', 'XTP', 'XIP', 'POL', 'POR', 'XPC', 'XUI', 'QAT', 'RSS', 'ROM', 'XRR', 'XSR', 'RUS', 'RWA', 'SKN', 'SVG', 'SAM', 'SAU', 'SEN', 'SER', 'SEY', 'SIE', 'SIN', 'XLS', 'SLK', 'SLO', 'XSY', 'SOL', 'SOM', 'SA', 'XYS', 'KOS', 'SSD', 'VNS', 'YES', 'USR', 'SPA', 'XSP', 'SRI', 'SUD', 'SUR', 'SWE', 'SWI', 'SYR', 'XSX', 'TAI', 'TAJ', 'TAN', 'THA', 'ET', 'TOG', 'TON', 'TRI', 'TUN', 'TUR', 'TRK', 'TUV', 'UAE', 'UGA', 'XSI', 'UKR', 'XUR', 'XAU', 'UK', 'UNO', 'USA', 'XMU', 'XXX', 'XXU', 'XXR', 'XXS', 'URU', 'UZB', 'VAN', 'VEN', 'XVC', 'XFV', 'VN', 'SAH', 'YEM', 'YAR', 'YUG', 'ZAM', 'XZZ', 'ZIM']
+    key = requests.post('http://localhost/api/generate', json={"email": "admin", "full_name":"leopold"}).content.decode('utf8')
+    ts = []
     for country_code in codes:
-        for year in range(2000, 2020):
-            id = 4
-
-            try:
-                country = get_country(country_code)
-                key = requests.post('http://localhost/api/generate', json={"email": "admin", "full_name":"leopold"}).content.decode('utf8')
-                text = get_rtf(country_code=country_code, year=year, id=id)
-                if text != False: 
-                    data = text.decode('utf8').split('\n')
-                    ret = []
-                    for line in data:
-                        if country in line:
-                            ret = parse(line, country,key ,id, year)
-                    send(ret)
-                else: 
-                    print ("Can't get data")
-            except:
-                print('bad name', country_code)
+        ts.append(threading.Thread(target=run, args=(key, country_code,)) )
+        ts[-1].start()
+    for t in ts:
+        t.join()
