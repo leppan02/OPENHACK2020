@@ -14,18 +14,28 @@ class Trade(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     country_from = db.Column(db.String())
     country_to = db.Column(db.String())
-    thing = db.Column(db.String())
+    weapon_name = db.Column(db.String())
     amount = db.Column(db.Integer())
     trade_start = db.Column(db.Date())
     trade_end = db.Column(db.Date())
 
-    def __init__(self, country_from, country_to, thing, amount, trade_start, trade_end): 
+    def __init__(self, country_from, country_to, weapon_name, amount, trade_start, trade_end): 
         self.country_from = country_from
         self.country_to = country_to
-        self.thing = thing
+        self.weapon_name = weapon_name
         self.amount = amount
         self.trade_start = trade_start
         self.trade_end = trade_end
+
+class Weapon(db.Model):
+    __tablename__ = 'weapons'
+
+    weapon_name = db.Column(db.String(), primary_key=True)
+    category = db.Column(db.String())
+
+    def __init__(self, weapon_name, category):
+        self.weapon_name = weapon_name
+        self.category = category
 
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
@@ -33,12 +43,25 @@ def parse_date(data):
 @app.route('/', methods=['POST', 'GET'])
 def index(): 
     if request.is_json:
-        data = request.get_json() 
+        data = request.get_json()
+
+        print("a")
+        included_parts = db.session.query(
+            Weapon.weapon_name,
+        ).filter(Weapon.weapon_name == data["weapon_name"]).all()
+
+        if len(included_parts) == 0:
+            new_weapon = Weapon(
+                weapon_name = data["weapon_name"],
+                category = data["category"],
+            )
+
+            db.session.add(new_weapon)
 
         new_trade = Trade(
             country_from=data['country_from'],
             country_to=data['country_to'],
-            thing=data['thing'],
+            weapon_name=data['weapon_name'],
             amount=data['amount'],
             trade_start=parse_date(data['trade_start']),
             trade_end=parse_date(data['trade_end'])
