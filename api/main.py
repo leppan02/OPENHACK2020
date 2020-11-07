@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import json
 from datetime import datetime
+import hashlib
+import random
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:docker@postgres/hh"
@@ -39,6 +42,16 @@ class Weapon(db.Model):
     def __init__(self, weapon_name, category):
         self.weapon_name = weapon_name
         self.category = category
+
+class Api(db.Model):
+    __tablename__ = 'api'
+
+    key = db.Column(db.String(), primary_key=True)
+    email = db.Column(db.String())
+
+    def __init__(self, email):
+        self.email = email
+        self.key = hashlib.md5(bytes(random.randint(0,100000))).hexdigest()
 
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
@@ -100,6 +113,17 @@ def query_trade():
         "trade_end": "2020-11-09",
         "source": "din-mamma.se/info.html.zip",
     }])
+
+@app.route('/api/generate', methods=['POST'])
+def generate():
+    if request.is_json:
+        data = request.get_json()
+        new_key = Api(data['email'])
+        db.session.add(new_key)
+        db.session.commit()
+        return new_key.key
+    return "Expected JSON"
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)

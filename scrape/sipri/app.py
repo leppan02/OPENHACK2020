@@ -1,6 +1,7 @@
 
 import requests
 import json
+URL = 'https://armstrade.sipri.org/armstrade/html/export_values.php' 
 def getCSV(country_code='USA'):
     payload = {'import_or_export': 'export',
     'country_code': country_code,
@@ -9,7 +10,7 @@ def getCSV(country_code='USA'):
     'summarize': 'country',
     'filetype': 'csv',
     'Action': 'Download'}
-    return requests.post(url='https://armstrade.sipri.org/armstrade/html/export_values.php' , data=payload).content.decode('utf8')
+    return requests.post(url=URL , data=payload).content.decode('utf8')
     
 
 def parse(country_code):
@@ -26,11 +27,10 @@ def parse(country_code):
         for j in data:
             try:
                 if len(j):
-                    package = {'country_from':country,'country_to':countryto, 'amount': j, 'trade_start':"{}-01-01".format(year), 'trade_end': "{}-01-01".format(year+1)}
+                    package = {'country_from':country,'country_to':countryto, 'source': URL, 'trade_start':"{}-01-01".format(year), 'trade_end': "{}-01-01".format(year+1)}
                     j = int(j)
                     if j != '0':
                         package[ 'amount'] = j
-                    package = {'country_from':country,'country_to':countryto, 'amount': j, 'trade_start':"{}-01-01".format(year), 'trade_end': "{}-01-01".format(year+1)}
                     ret.append(package)
             except:
                 print('failed',{'country_from':country,'country_to':countryto, 'amount': j, 'trade_start':"{}-01-01".format(year), 'trade_end': "{}-01-01".format(year+1)})
