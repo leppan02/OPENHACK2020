@@ -14,6 +14,14 @@ def parse_date(data):
 def get_or_none(data, field):
     if field in data:
         return data[field]
+def verify_api_key(key):
+    has_key = db.session.query(
+        Api.key,
+    ).filter(Api.key == key).all()
+    if has_key:
+        return True
+    else:
+        return False
 
 @app.route('/api/add_trade', methods=['POST'])
 def add_trade():
@@ -36,6 +44,7 @@ def add_trade():
 
         new_trade = Trade(
             country_from=data['country_from'],
+            api_key=data['api_key'],
             country_to=data['country_to'],
             weapon_name=get_or_none(data, 'weapon_name'),
             amount=get_or_none(data, 'amount'),
@@ -91,13 +100,14 @@ def query_trade():
 
         return json.dumps(trades_struct)
 
-    return "need json"
+    return "Expected JSON"
 
 @app.route('/api/generate', methods=['POST'])
 def generate():
+    #{full_name:..., email:...}
     if request.is_json:
         data = request.get_json()
-        new_key = Api(data['email'])
+        new_key = Api(data['email'], data['full_name'])
         db.session.add(new_key)
         db.session.commit()
         return new_key.key
