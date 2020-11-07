@@ -55,17 +55,27 @@ def get_rtf(country_code='SWE', year=2019, id=1):
         return r.content
 
 def parsedate(date):
-    return {}
+    if date == '':
+        return {'ignore': 1}
+    if '-' in date:
+        return {'trade_start':"{}-01-01".format(date.split('-')[0]), 'trade_end': "{}-01-01".format(date.split('-')[1])}
+    return {'trade_start':"{}-01-01".format(date.replace('(', '').replace(')', '')), 'trade_end': "{}-01-01".format(1+int(date.replace('(', '').replace(')', '')))}
 
 def parse(data, country, key, weapon_type):
     lines = data.split('{\\b     }')
 
     suppliers = []
+    last = ''
     for line in lines: 
         data = line.replace('\\par{', '').replace('\\b', '').replace('R:}', '').replace('{ '+country+'}', '').split('\\tab')
-        cur = {'country_from':country,'country_to':data[0].replace(' ', ''), 'source': URL, 'api_key':key}
+        cur = {'country_from':country,'country_to':data[0].replace(' ', ''), 'source': URL, 'api_key':key, 'weapon_name': weapon_type}
+        if cur['country_to'] == '':
+            cur['country_to'] = last
+        else: 
+            last = cur['country_to']
         cur.update(parsedate(data[5].replace(' ', '')))
-        suppliers.append(cur)
+        if 'ignore' not in cur:
+            suppliers.append(cur)
     return suppliers
 
 
