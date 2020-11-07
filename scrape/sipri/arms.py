@@ -348,14 +348,10 @@ if __name__ == "__main__":
 
     text = get_rtf(country_code=country_code, year=year, id=id)
     if text != False: 
-        open('test.rtf', 'wb').write(text)
-
-        f = open('test.rtf', 'r')
-        data = f.readlines() 
+        data = text.decode('utf8').split('\n')
         for line in data:
             if country in line:
                 parse(line, country)
 
-        f.close()
     else: 
         print ("Can't get data")
