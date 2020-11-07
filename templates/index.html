@@ -12,10 +12,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
     <script src="https://datamaps.github.io/scripts/0.4.4/datamaps.world.min.js"></script>
     <h1>Working!</h1>
-    <div id="container" style="position: relative; width: 500px; height: 300px;"></div>
+    <div id="container" style="position: relative; width: 600px; height: 450px;"></div>
     <script>
         var basic = new Datamap({
-            element: document.getElementById("container")
+            element: document.getElementById("container"),
+            projection: "mercator"
         });
     </script>
 </body>
