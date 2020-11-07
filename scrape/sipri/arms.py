@@ -91,15 +91,18 @@ if __name__ == "__main__":
         for year in range(2000, 2020):
             id = 4
 
-    country = get_country(country_code)
-    key = requests.post('http://localhost/api/generate', json={"email": "admin", "full_name":"leopold"}).content.decode('utf8')
-    text = get_rtf(country_code=country_code, year=year, id=id)
-    if text != False: 
-        data = text.decode('utf8').split('\n')
-        ret = []
-        for line in data:
-            if country in line:
-                ret = parse(line, country,key ,id, year)
-        send(ret)
-    else: 
-        print ("Can't get data")
+            try:
+                country = get_country(country_code)
+                key = requests.post('http://localhost/api/generate', json={"email": "admin", "full_name":"leopold"}).content.decode('utf8')
+                text = get_rtf(country_code=country_code, year=year, id=id)
+                if text != False: 
+                    data = text.decode('utf8').split('\n')
+                    ret = []
+                    for line in data:
+                        if country in line:
+                            ret = parse(line, country,key ,id, year)
+                    send(ret)
+                else: 
+                    print ("Can't get data")
+            except:
+                print('bad name', country_code)
