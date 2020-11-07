@@ -100,22 +100,37 @@ def add_trade():
 
 @app.route('/api/query_trade', methods=['GET'])
 def query_trade():
-    # Parameters:
-    #   country_from: string
-    #   date_start: "YYYY-mm-dd"
-    #   date_end: "YYYY-mm-dd"
+    if request.is_json:
+        data = request.get_json()
 
-    return json.dumps([{
-        "id": 75,
-        "country_from": "Sweden",
-        "country_to": "Vatican State",
-        "weapon_name": "kötbullr",
-        "weapon_category": "mums",
-        "amount": 55,
-        "trade_start": "2020-11-07",
-        "trade_end": "2020-11-09",
-        "source": "din-mamma.se/info.html.zip",
-    }])
+        trades = db.session.query(
+            Trade.country_from,
+            Trade.country_to,
+            Trade.weapon_name,
+            Trade.amount,
+            Trade.trade_start,
+            Trade.trade_end,
+            Trade.is_verified,
+            Trade.source,
+        ).filter(Trade.country_from == data["country_from"]).all()
+
+        trades_struct = [
+            {
+                "country_from": trade[0],
+                "country_to":   trade[1],
+                "weapon_name":  trade[2],
+                "amount":       trade[3],
+                "trade_start":  datetime.strftime(trade[4], "%Y-%m-%d"),
+                "trade_end":    datetime.strftime(trade[5], "%Y-%m-%d"),
+                "is_verified":  trade[6],
+                "source":       trade[7],
+            }
+            for trade in trades
+        ]
+
+        return json.dumps(trades_struct)
+
+    return "need json"
 
 @app.route('/api/generate', methods=['POST'])
 def generate():
