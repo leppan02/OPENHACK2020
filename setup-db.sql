@@ -25,3 +25,8 @@ CREATE TABLE conflicts (
     verified boolean NOT NULL DEFAULT false,
     source varchar(500) NOT NULL
 );
+
+CREATE TABLE api (
+    key varchar(500) NOT NULL PRIMARY KEY,
+    email varchar(500) NOT NULL
+);

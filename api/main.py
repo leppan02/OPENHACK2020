@@ -53,7 +53,7 @@ class Api(db.Model):
 
     def __init__(self, email):
         self.email = email
-        self.key = hashlib.md5(bytes(random.randint(0,100000))).hexdigest()
+        self.key = hashlib.md5(hex(random.randint(0,1000000000000000000))).hexdigest()
 
 def parse_date(data):
     return datetime.strptime(data, "%Y-%m-%d").date()
