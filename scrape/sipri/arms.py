@@ -66,14 +66,24 @@ def parse(data, country, key, weapon_type,year):
         cur = {'country_from':country,'country_to':data[0].replace(' ', ''), 'source': URL, 'api_key':key, 'weapon_name': get_weapon(weapon_type),'trade_start':"{}-01-01".format(year), 'trade_end': "{}-01-01".format(year+1)}
         if cur['country_to'] == '':
             cur['country_to'] = last
+            try:
+                cur['amount'] = int(data[2].replace('(', '').replace(')', '').replace(' ', ''))
+            except:
+                continue
         else: 
             last = cur['country_to']
+            try:
+                cur['amount'] = int(data[1].replace('(', '').replace(')', '').replace(' ', ''))
+            except:
+                continue
         if 'ignore' not in cur:
             suppliers.append(cur)
-        print(data[6])
     return suppliers
 
-
+def send(packages):
+    if len(packages):
+        resp = requests.post('http://localhost/api/add_trades',json=packages)
+        print("worked")
 
 if __name__ == "__main__":
     country_code = "USA"
@@ -81,7 +91,7 @@ if __name__ == "__main__":
     id = 4
 
     country = get_country(country_code)
-    key = requests.post('http://l-h.nu/api/generate', json={"email": "admin", "full_name":"leopold"}).content.decode('utf8')
+    key = requests.post('http://localhost/api/generate', json={"email": "admin", "full_name":"leopold"}).content.decode('utf8')
     text = get_rtf(country_code=country_code, year=year, id=id)
     if text != False: 
         data = text.decode('utf8').split('\n')
@@ -89,7 +99,6 @@ if __name__ == "__main__":
         for line in data:
             if country in line:
                 ret = parse(line, country,key ,id, year)
-        for i in ret:
-            print(i)
+        send(ret)
     else: 
         print ("Can't get data")
