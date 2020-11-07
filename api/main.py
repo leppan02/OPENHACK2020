@@ -53,45 +53,45 @@ def add_trade():
 
 @app.route('/api/query_trade', methods=['GET'])
 def query_trade():
-    if request.is_json:
-        data = request.get_json()
+    country_from = request.args.get('country_from')
+    start = request.args.get('trade_start')
+    end = request.args.get('trade_end')
 
-        tradesq = db.session.query(
-            Trade.country_from,
-            Trade.country_to,
-            Trade.weapon_name,
-            Trade.amount,
-            Trade.trade_start,
-            Trade.trade_end,
-            Trade.is_verified,
-            Trade.source,
-        ).filter(Trade.country_from == data["country_from"])
+    tradesq = db.session.query(
+        Trade.country_from,
+        Trade.country_to,
+        Trade.weapon_name,
+        Trade.amount,
+        Trade.trade_start,
+        Trade.trade_end,
+        Trade.is_verified,
+        Trade.source,
+    ).filter(Trade.country_from == country_from)
 
-        if "trade_start" in data:
-            tradesq = tradesq.filter(Trade.trade_start > parse_date(data["trade_start"]))
+    if start != None:
+        tradesq = tradesq.filter(Trade.trade_start > parse_date(start))
 
-        if "trade_end" in data:
-            tradesq = tradesq.filter(Trade.trade_end < parse_date(data["trade_end"]))
+    if end != None:
+        tradesq = tradesq.filter(Trade.trade_end < parse_date(end))
 
-        trades = tradesq.all()
+    trades = tradesq.all()
 
-        trades_struct = [
-            {
-                "country_from": trade[0],
-                "country_to":   trade[1],
-                "weapon_name":  trade[2],
-                "amount":       trade[3],
-                "trade_start":  datetime.strftime(trade[4], "%Y-%m-%d"),
-                "trade_end":    datetime.strftime(trade[5], "%Y-%m-%d"),
-                "is_verified":  trade[6],
-                "source":       trade[7],
-            }
-            for trade in trades
-        ]
+    trades_struct = [
+        {
+            "country_from": trade[0],
+            "country_to":   trade[1],
+            "weapon_name":  trade[2],
+            "amount":       trade[3],
+            "trade_start":  datetime.strftime(trade[4], "%Y-%m-%d"),
+            "trade_end":    datetime.strftime(trade[5], "%Y-%m-%d"),
+            "is_verified":  trade[6],
+            "source":       trade[7],
+        }
+        for trade in trades
+    ]
 
-        return json.dumps(trades_struct)
+    return json.dumps(trades_struct)
 
-    return "need json"
 
 @app.route('/api/generate', methods=['POST'])
 def generate():
