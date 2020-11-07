@@ -78,5 +78,19 @@ def add_trade():
 
     return "Expected JSON"
 
+@app.route('/api/query_trade', methods=['GET'])
+def query_trade():
+    # TODO
+    return {
+        "id": 75,
+        "country_from": "Sweden",
+        "country_to": "Vatican State",
+        "weapon_name": "kötbullr",
+        "weapon_category": "mums",
+        "amount": 55,
+        "trade_start": "2020-11-07",
+        "trade_end": "2020-11-09",
+    }
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
