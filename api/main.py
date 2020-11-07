@@ -44,8 +44,8 @@ def get_or_none(data, field):
     if field in data:
         return data[field]
 
-@app.route('/', methods=['POST', 'GET'])
-def index(): 
+@app.route('/api/add_trade', methods=['POST'])
+def add_trade():
     if request.is_json:
         data = request.get_json()
 
@@ -74,8 +74,9 @@ def index():
 
         db.session.add(new_trade)
         db.session.commit()
+        return "Added"
 
-    return render_template('index.html')
+    return "Expected JSON"
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
