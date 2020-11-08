@@ -135,8 +135,8 @@ def query_trade():
             "country_to":   trade[1],
             "weapon_name":  trade[2],
             "amount":       trade[3],
-            "trade_start":  datetime.strftime(trade[4], "%Y-%m-%d"),
-            "trade_end":    datetime.strftime(trade[5], "%Y-%m-%d"),
+            "trade_start":  datetime.strftime(trade[4], "%Y"),
+            "trade_end":    datetime.strftime(trade[5], "%Y"),
             "is_verified":  trade[6],
             "source":       trade[7],
         }
@@ -157,6 +157,36 @@ def generate():
         return new_key.api_key
     return "Expected JSON"
 
+def add_trade(data):
+    if not verify_api_key(data['api_key']):
+        return 'Exception invalid api_key.'
+
+    matches = db.session.query(
+        Trade.id,
+    ).filter(
+        Trade.api_key==data['api_key'],
+        Trade.country==data['country'],
+        Trade.info==get_or_none(data, 'info'),
+        Trade.picture_url==get_or_none(data, 'picture_url'),
+        Trade.date_start==parse_date(data['date_start']),
+        Trade.source==data['source'],
+    ).all()
+    if matches != []:
+        print("Duplicate")
+
+    new_trade = Conflict(
+        country=data['country'],
+        api_key=data['api_key'],
+        picture_url=get_or_none(data, 'picture_url'),
+        info=get_or_none(data, 'info'),
+        date_start=parse_date(data['date_start']),
+        verified=False,
+        source=data['source'],
+    )
+
+    db.session.add(new_trade)
+    db.session.commit()
+    return "Added"
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
