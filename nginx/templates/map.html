@@ -234,6 +234,8 @@
                 "BOL": "Bolivia",
                 "COD": "DR Congo",
                 "BIH": "Bosnia-Herzegovina",
+                "MDA": "Moldova",
+                "CPV": "Cabo Verde",
             }
 
             geometries = map.worldTopo.objects.world.geometries
@@ -486,9 +488,9 @@
 
                     var info = document.createElement("a");
                     info.href = conflict["source"];
-                    info.style = "height:300px;width:300px;overflow:auto;padding:2%"; 
+                    info.style = "height:300px;width:300px;overflow:auto;padding:2%";
                     info.className += "infotext";
-                    info.textContent = conflict.info.replace('<newline>','\n');
+                    info.textContent = conflict.info.replace('<newline>', '\n');
                     console.log(info);
                     if (info.textContent.length > 400) {
                         info.textContent = info.textContent.substr(0, 400);
