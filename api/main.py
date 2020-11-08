@@ -175,6 +175,24 @@ def add_conflicts():
 
     return "Expected JSON"
 
+@app.route('/api/users', methods=['GET'])
+def users():
+    users = db.session.query(
+        Api.email,
+        Api.full_name,
+        Api.api_key,
+    )
+    user_struct = [
+        {
+            "email": user[0],
+            "full_name":  user[1],
+            "api_key":  user[2],
+        }
+        for user in users
+    ]
+    return user_struct
+
+
 def add_conflict(data):
     if not verify_api_key(data['api_key']):
         return 'Exception invalid api_key.'
