@@ -8,6 +8,11 @@
 </head>
 <style>
 
+body {
+    background-color: #152624;
+    color: white;
+}
+
 #main-page {
     margin-left: 3em;
     margin-right: 3em;
@@ -50,6 +55,10 @@
     border-radius: 5px;
     display: inline-block;
     margin-right: 1ex;
+}
+
+.hoverinfo {
+    color: black;
 }
 
 </style>
@@ -97,6 +106,10 @@
             map = new Datamap({
                 element: document.getElementById("world-map"),
                 projection: "mercator",
+                geographyConfig: {
+                    borderColor: '#444',
+                    borderWidth: 0.5,
+                },
                 done: function (datamap) {
                     datamap.svg.selectAll('.datamaps-subunit').on('click', async function (geography) {
                         console.log(geography)
@@ -129,9 +142,10 @@
                     }
                 },
                 fills: {
-                    defaultFill: "#152624",
+                    defaultFill: "#eeeeee",
                     hasConflict: "#888888"
                 },
+                strokeColor: "#000000",
             });
 
             var slider = document.getElementById('slider');
@@ -291,7 +305,6 @@
                 // console.log(trade.trade_start <= maxyear)
                 // console.log(trade)
                 if ((trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) && trades[trade].trade_start >= minyear && trades[trade].trade_start <= maxyear) {
-
                     Math.seedrandom(trades[trade])
                     var sharp = 1 - Math.random() * 2;
 
