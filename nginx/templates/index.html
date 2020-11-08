@@ -4,18 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
-
+    <link href="nouislider.min.css" rel="stylesheet">
 </head>
 
 <body>
+
+    <script src="nouislider.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
     <script src="https://datamaps.github.io/scripts/0.5.8/datamaps.world.hires.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js">
     </script>
-    <div style="position: relative; width: 1000px; height: 700px;">
+    <div style="position: relative; width: 1000px; height: 700px; margin-left: 64px;">
         <div id="container" style="position: relative; width: 100%; height: 100%;"></div>
-        <input type="range" min="1" max="100" value="50" class="slider" style="width: 100%;">
+        <div id="slider" style="width: 100%;"></div>
     </div>
 
     <script>
@@ -25,6 +27,7 @@
         var reverseMapping = {}
         // var countryFilter = {}
         var fetchedCountry = {}
+        var lastCountry = ""
 
         window.onload = async function () {
             map = new Datamap({
@@ -61,6 +64,30 @@
                 }
             });
 
+            var slider = document.getElementById('slider');
+
+            noUiSlider.create(slider, {
+                start: [2019, 2020],
+                connect: true,
+                range: {
+                    'min': 2000,
+                    'max': 2020
+                },
+                step: 1,
+                pips: {
+                    mode: 'steps',
+                    density: 1,
+                    // format: wNumb({
+                    //     decimals: 2,
+                    //     prefix: '€'
+                    // })
+                }
+            });
+
+            slider.noUiSlider.on("update", function () {
+                updateArcs(lastCountry)
+            })
+
             geometries = map.worldTopo.objects.world.geometries
             for (i = 0; i < geometries.length; i++) {
                 mapping[geometries[i].properties.name] = geometries[i].id
@@ -88,6 +115,13 @@
             let response = await fetch(url);
             let rawTrades = await response.json()
 
+            url = new URL(document.location.origin + '/api/query_trade')
+
+            url.search = new URLSearchParams({ "country_to": reverseMapping[countryCode] }).toString();
+
+            response = await fetch(url);
+            rawTrades.concat(response.json())
+
             for (var i = 0; i < rawTrades.length; i++) {
                 if (!(rawTrades[i].country_to in mapping)) {
                     console.log(rawTrades[i].country_to + " not in mapping")
@@ -105,8 +139,17 @@
 
         async function updateArcs(countryCode) {
             let arcs = []
+            let minyear = Math.round(slider.noUiSlider.get()[0])
+            let maxyear = Math.round(slider.noUiSlider.get()[1])
+            console.log(minyear)
+            console.log(maxyear)
+
             for (trade in trades) {
-                if (trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) {
+                // console.log(trades[trade].country_from === countryCode || trades[trade].country_to === countryCode)
+                // console.log(trade.trade_start >= minyear)
+                // console.log(trade.trade_start <= maxyear)
+                // console.log(trade)
+                if ((trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) && trades[trade].trade_start >= minyear && trades[trade].trade_start <= maxyear) {
                     Math.seedrandom(trades[trade])
                     arcs.push({
                         origin: trades[trade].country_from,
@@ -117,6 +160,7 @@
 
             }
             map.arc(arcs)
+            lastCountry = countryCode
         }
 
 
