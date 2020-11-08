@@ -7,69 +7,85 @@
     <link href="nouislider.min.css" rel="stylesheet">
 </head>
 <style>
-    body {
-        background-color: #152624;
-        color: white;
-    }
 
-    #main-page {
-        margin-left: 3em;
-        margin-right: 3em;
+body {
+    background-color: #152624;
+    color: white;
+}
 
-        display: flex;
-        flex-direction: row;
-    }
+#main-page {
+    margin-left: 3em;
+    margin-right: 3em;
 
-    #col-left {
-        width: 70%;
-        padding: 2em;
-        box-sizing: border-box;
-        margin-right: 1em;
-    }
+    display: flex;
+    flex-direction: row;
+}
 
-    #col-right {
-        margin-left: 1em;
-        margin-top: 5em;
-    }
+#col-left {
+    width: 70%;
+    padding: 2em;
+    box-sizing: border-box;
+    margin-right: 1em;
+}
 
-    #world-map {
-        margin-top: 5em;
-        width: 100%;
-        height: 70vh;
-    }
+#col-right {
+    margin-left: 1em;
+    margin-top: 5em;
+}
 
-    #slider {
-        width: 100%;
-    }
+#world-map {
+    margin-top: 5em;
+    width: 100%;
+    height: 70vh;
+}
 
-    .color-hint {
-        margin-top: 0.3em;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        cursor: pointer;
-    }
+#slider {
+    width: 100%;
+}
 
-    .color-square {
-        width: 1em;
-        height: 1em;
-        border-radius: 5px;
-        display: inline-block;
-        margin-right: 1ex;
-    }
+.color-hint {
+    margin-top: 0.3em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
 
-    .hoverinfo {
-        color: black;
-    }
+.color-square {
+    width: 1em;
+    height: 1em;
+    border-radius: 5px;
+    display: inline-block;
+    margin-right: 1ex;
+}
 
-    .selected {
-        font-style: italic;
-        color: #ffffff;
-    }
+.hoverinfo {
+    color: black;
+}
 
-    .unselected {
-        color: #999999;
-    }
+.selected {
+    font-style: italic;
+    color: #ffffff;
+}
+
+.unselected {
+    color: #999999;
+}
+
+.confpiccont {
+    width: 180px;
+    height: 180px;
+}
+
+.confpic {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.infotext {
+    margin: 0;
+}
+
 </style>
 
 <body>
@@ -91,7 +107,6 @@
             </div>
 
             <div id="conflicts">
-
             </div>
         </div>
     </div>
@@ -406,6 +421,41 @@
                 color_hint.appendChild(desc);
 
                 elem.appendChild(color_hint);
+            }
+
+            var econflicts = document.getElementById("conflicts");
+            econflicts.innerHTML = "";
+            // Conflict
+            if (reverseMapping[lastCountry] in country_conflicts) {
+                econflicts.innerHTML = "<h3> Conflicts </h3>";
+
+                let conflicts = country_conflicts[reverseMapping[lastCountry]];
+                for (var i = 0; i < conflicts.length; i++) {
+                    var conflict = conflicts[i];
+                    var econflict = document.createElement("div");
+                    econflict.className += "conflict";
+
+                    var piccont = document.createElement("div");
+                    piccont.className = "confpiccont";
+
+                    var picture = document.createElement("img");
+                    picture.src = conflict["picture_url"]
+                    picture.className = "confpic";
+
+                    piccont.appendChild(picture);
+                    econflict.appendChild(piccont);
+
+                    var info = document.createElement("p");
+                    info.className += "infotext";
+                    info.textContent = conflict.info;
+                    if (info.textContent.length > 50) {
+                        info.textContent = info.textContent.substr(0, 50);
+                        info.textContent += "...";
+                    }
+                    econflict.appendChild(info);
+
+                    econflicts.appendChild(econflict);
+                }
             }
         }
 
