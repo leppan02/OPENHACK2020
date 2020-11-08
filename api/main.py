@@ -199,12 +199,12 @@ def delete():
     key = request.get_json()['api_key']
     s = db.session
     s.trades.delete().where(
-        s.verified!=True,
-        s.api_key == key
+        s.trades.verified!=True,
+        s.trades.api_key == key
     )
     s.conflicts.delete().where(
-        s.verified!=True,
-        s.api_key == key
+        s.trades.verified!=True,
+        s.trades.api_key == key
     )
     s.commit()
     return "Success"
