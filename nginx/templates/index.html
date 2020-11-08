@@ -123,6 +123,7 @@ body {
                 },
                 done: function (datamap) {
                     datamap.svg.selectAll('.datamaps-subunit').on('click', async function (geography) {
+                        filter_weapons.clear();
                         console.log(geography)
                         // countryFilter[geography.id] ^= 1
                         await fetchAndProcessCountry(geography.id)
