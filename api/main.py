@@ -181,7 +181,7 @@ def users():
         Api.email,
         Api.full_name,
         Api.api_key,
-    )
+    ).all()
     user_struct = [
         {
             "email": user[0],
@@ -190,7 +190,7 @@ def users():
         }
         for user in users
     ]
-    return user_struct
+    return json.dumps(user_struct)
 
 
 def add_conflict(data):
