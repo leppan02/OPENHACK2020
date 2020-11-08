@@ -376,7 +376,12 @@ body {
 
             elem.innerHTML = Object.keys(color_hints).length == 0 ? "" : "  <p> (Click to filter) </p> ";
 
-            for (weapon_name in color_hints) {
+            let weapons = Object.keys(color_hints);
+            weapons.sort();
+
+            for (var i = 0; i < weapons.length; i++) {
+                var weapon_name = weapons[i];
+
                 var square = document.createElement("div");
                 square.className += "color-square";
                 square.style = "background: " + color_hints[weapon_name].color + ";";
