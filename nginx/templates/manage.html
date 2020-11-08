@@ -228,12 +228,12 @@ async function select_mode() {
             <th> Name </th> 
             <th> Email </th> 
             <th> Api key </th>
-            <th> Delete </th>
+            <th> Clear data </th>
         </tr>
         `
         for (var i = 0; i < users.length; i++){
             table_data += `<tr><th>`+users[i]["full_name"]+`</th><th>`+users[i]["email"]+`</th><th>`+users[i]["api_key"]+`</th>
-            <th><input type="button" id="submit" value="Delete" onclick="delete_data(\'`+users[i]["api_key"]+`\')"></th>
+            <th><input type="button" id="submit" value="Clear" onclick="delete_data(\'`+users[i]["api_key"]+`\')"></th>
             </tr>`; 
         }
         document.getElementById("table").innerHTML = table_data
@@ -248,7 +248,7 @@ function delete_data(api_key){
 
     xmlhttp.onreadystatechange = function () {
         console.log(this);
-        if (this.readyState == 4 && this.response == "Added") {
+        if (this.readyState == 4 && this.response == "worked") {
             console.log(this.response);
             document.getElementById("success").style.setProperty("transition-duration", 0.1);
             document.getElementById("success").style.setProperty("opacity", 100);
