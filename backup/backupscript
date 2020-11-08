@@ -1,0 +1,1 @@
+tar -czvf backup_01.tar.gz /var/lib/docker/volumes/openhack2020_db-data/_data
