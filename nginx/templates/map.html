@@ -7,113 +7,112 @@
     <link href="nouislider.min.css" rel="stylesheet">
 </head>
 <style>
+    body {
+        background-color: #152624;
+        color: white;
+    }
 
-body {
-    background-color: #152624;
-    color: white;
-}
+    #main-page {
+        margin-left: 3em;
+        margin-right: 3em;
 
-#main-page {
-    margin-left: 3em;
-    margin-right: 3em;
+        display: flex;
+        flex-direction: row;
+    }
 
-    display: flex;
-    flex-direction: row;
-}
+    #col-left {
+        width: 70%;
+        padding: 2em;
+        box-sizing: border-box;
+        margin-right: 1em;
+    }
 
-#col-left {
-    width: 70%;
-    padding: 2em;
-    box-sizing: border-box;
-    margin-right: 1em;
-}
+    #col-right {
+        margin-left: 1em;
+        margin-top: 5em;
+    }
 
-#col-right {
-    margin-left: 1em;
-    margin-top: 5em;
-}
+    #world-map {
+        margin-top: 5em;
+        width: 100%;
+        height: 70vh;
+    }
 
-#world-map {
-    margin-top: 5em;
-    width: 100%;
-    height: 70vh;
-}
+    #slider {
+        width: 100%;
+    }
 
-#slider {
-    width: 100%;
-}
+    .color-hint {
+        margin-top: 0.3em;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        cursor: pointer;
+    }
 
-.color-hint {
-    margin-top: 0.3em;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    cursor: pointer;
-}
+    .color-square {
+        width: 1em;
+        height: 1em;
+        border-radius: 5px;
+        display: inline-block;
+        margin-right: 1ex;
+    }
 
-.color-square {
-    width: 1em;
-    height: 1em;
-    border-radius: 5px;
-    display: inline-block;
-    margin-right: 1ex;
-}
+    .hoverinfo {
+        color: black;
+    }
 
-.hoverinfo {
-    color: black;
-}
+    .selected {
+        font-style: italic;
+        color: #ffffff;
+    }
 
-.selected {
-    font-style: italic;
-    color: #ffffff;
-}
+    .unselected {
+        color: #999999;
+    }
 
-.unselected {
-    color: #999999;
-}
+    .confpiccont {
+        width: 180px;
+        height: 180px;
+    }
 
-.confpiccont {
-    width: 180px;
-    height: 180px;
-}
+    .confpic {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
 
-.confpic {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-.infotext {
-    margin: 0;
-}
+    .infotext {
+        margin: 0;
+    }
 
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #333;
-}
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+    }
 
-li {
-  float: left;
-}
+    li {
+        float: left;
+    }
 
-li a {
-  display: block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
 
-li a:hover:not(.active) {
-  background-color: #111;
-}
+    li a:hover:not(.active) {
+        background-color: #111;
+    }
 
-.active {
-  background-color: #4CAF50;
-}
-
+    .active {
+        background-color: #4CAF50;
+    }
 </style>
 
 <body>
@@ -234,19 +233,25 @@ li a:hover:not(.active) {
                 updateConflicts();
             })
 
+            corrections = {
+                "RUS": "Russia",
+                "IRN": "Iran",
+                "LAO": "Laos",
+                "VEN": "Venezuela",
+                "CZE": "Chechia",
+                "KOR": "South Korea",
+            }
+
             geometries = map.worldTopo.objects.world.geometries
             for (i = 0; i < geometries.length; i++) {
-                mapping[geometries[i].properties.name] = geometries[i].id
-
+                name = (geometries[i].id in corrections) ? corrections[geometries[i].id] : geometries[i].properties.name
+                mapping[name] = geometries[i].id
+                reverseMapping[geometries[i].id] = name
             }
-            mapping["Russia"] = "RUS"
-            mapping["Iran"] = "IRN"
-            mapping["Laos"] = "LAO"
-            mapping["Venezuela"] = "VEN"
 
             for (countrymapping in mapping) {
                 // countryFilter[mapping[countrymapping]] = 0
-                reverseMapping[mapping[countrymapping]] = countrymapping
+                // reverseMapping[mapping[countrymapping]] = countrymapping
                 fetchedCountry[mapping[countrymapping]] = false
             }
 
