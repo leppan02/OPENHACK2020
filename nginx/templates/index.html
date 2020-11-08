@@ -67,8 +67,8 @@
             var slider = document.getElementById('slider');
 
             noUiSlider.create(slider, {
-                start: [2019, 2020],
-                connect: true,
+                start: [2019],
+                connect: false,
                 range: {
                     'min': 2000,
                     'max': 2020
@@ -140,7 +140,7 @@
         async function updateArcs(countryCode) {
             let arcs = []
             let minyear = Math.round(slider.noUiSlider.get()[0])
-            let maxyear = Math.round(slider.noUiSlider.get()[1])
+            let maxyear = minyear;
             console.log(minyear)
             console.log(maxyear)
 
