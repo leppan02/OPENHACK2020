@@ -194,12 +194,11 @@ async function select_mode() {
         <tr>
             <th> Name </th> 
             <th> Email </th> 
-            <th> Api key </th>
             <th> Clear data </th>
         </tr>
         `
         for (var i = 0; i < users.length; i++){
-            table_data += `<tr><th>`+users[i]["full_name"]+`</th><th>`+users[i]["email"]+`</th><th>`+users[i]["api_key"]+`</th>
+            table_data += `<tr><th>`+users[i]["full_name"]+`</th><th>`+users[i]["email"]+`</th>
             <th><input type="button" id="submit" value="Clear" onclick="delete_data(\'`+users[i]["api_key"]+`\')"></th>
             </tr>`; 
         }

@@ -186,7 +186,6 @@ def users():
         {
             "email": user[0],
             "full_name":  user[1],
-            "api_key":  user[2],
         }
         for user in users
     ]
