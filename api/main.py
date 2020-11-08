@@ -194,5 +194,32 @@ def add_conflict(data):
 
     return "Added"
 
+@app.route('/api/query_conflict', methods=['GET'])
+def query_conflict():
+
+    conflictsq = db.session.query(
+        Conflict.country,
+        Conflict.picture_url,
+        Conflict.info,
+        Conflict.source,
+        Conflict.verified,
+    )
+
+    trades = conflictsq.all()
+
+    trades_struct = [
+        {
+            "country": trade[0],
+            "picture_url":  trade[1],
+            "info":  trade[2],
+            "is_verified":  trade[4],
+            "source":       trade[4],
+        }
+        for trade in trades
+    ]
+
+    return json.dumps(trades_struct)
+
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=1234)
