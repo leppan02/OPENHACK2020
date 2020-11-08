@@ -85,6 +85,32 @@ label {
     transition: opacity 0.5s;
 }
 
+.borderwrapper {
+  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid #6b882b;
+  width: 100%;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #1b302d;
+}
+
+tr:nth-child(odd) {
+  background-color: #0c201e;
+}
+
 </style>
 
 </head>
@@ -102,6 +128,7 @@ label {
                 <select name="action" id="action_selector" onchange="select_mode()">
                     <option value="add_trade">Add Trade to the Database</option>
                     <option value="add_conflict">Add Conflict to the Database</option>
+                    <option value="handle_api_keys">Handle api keys</option> 
                 </select>
 
                 <hr style="width: 100%;">
@@ -121,7 +148,7 @@ label {
 var req_mode;
 var req_url;
 
-function select_mode() {
+async function select_mode() {
     var new_mode = document.getElementById("action_selector").value;
 
     if (new_mode == "add_trade") {
@@ -180,6 +207,56 @@ function select_mode() {
 </div>
 `;
     }
+
+    if (new_mode == "handle_api_keys") {
+        var url = new URL(document.location.origin + '/api/users')
+        url.search = new URLSearchParams({}).toString();
+
+        let response = await fetch(url);
+        let users = await response.json()
+
+        document.getElementById("fields").innerHTML = `
+<div id="cols">
+    <div class="borderwrapper">
+        <table style="width:100%;", id="table"> 
+    </div>
+    </table> 
+</div>        
+        `
+        let table_data = `
+        <tr>
+            <th> Name </th> 
+            <th> Email </th> 
+            <th> Api key </th>
+            <th> Delete </th>
+        </tr>
+        `
+        for (var i = 0; i < users.length; i++){
+            table_data += `<tr><th>`+users[i]["full_name"]+`</th><th>`+users[i]["email"]+`</th><th>`+users[i]["api_key"]+`</th>
+            <th><input type="button" id="submit" value="Delete" onclick="delete_data(\'`+users[i]["api_key"]+`\')"></th>
+            </tr>`; 
+        }
+        document.getElementById("table").innerHTML = table_data
+    }
+}
+
+function delete_data(api_key){
+    var data = {"api_key": api_key};
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", document.location.origin + '/api/delete');
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+
+    xmlhttp.onreadystatechange = function () {
+        console.log(this);
+        if (this.readyState == 4 && this.response == "Added") {
+            console.log(this.response);
+            document.getElementById("success").style.setProperty("transition-duration", 0.1);
+            document.getElementById("success").style.setProperty("opacity", 100);
+        }
+    };
+
+
+    xmlhttp.send(JSON.stringify(data));
 }
 
 select_mode();
