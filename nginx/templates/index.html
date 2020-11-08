@@ -118,7 +118,7 @@
                         else if (data.origin && data.destination) {
                             return '<div class="hoverinfo"><strong>Arc</strong><br>' +
                                 data.origin + ' -> ' + data.destination + '<br>' +
-                                data.w_name + "</div>";
+                                data.w_name + " x " + data.w_amount + "</div>";
                         }
                         // Missing information
                         else {
@@ -253,7 +253,7 @@
                 // console.log(trade)
                 if ((trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) && trades[trade].trade_start >= minyear && trades[trade].trade_start <= maxyear) {
                     Math.seedrandom(trades[trade])
-                    var sharp = 2.5 - Math.random() * 2;
+                    var sharp = 1 - Math.random() * 2;
 
                     var color;
                     if (trades[trade].weapon_name in color_hints) {
@@ -272,6 +272,7 @@
                         strokeColor: color,
                         strokeWidth: 2 + Math.log(trades[trade].amount),
                         w_name: trades[trade].weapon_name,
+                        w_amount: trades[trade].amount,
                     })
                 }
 
@@ -279,10 +280,10 @@
             map.arc(arcs)
             lastCountry = countryCode
 
-            render_color_table();
+            render_sidebar();
         }
 
-        function render_color_table() {
+        function render_sidebar() {
             let elem = document.getElementById("color-hints");
 
             elem.innerHTML = "";
