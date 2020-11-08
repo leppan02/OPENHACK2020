@@ -192,6 +192,18 @@ def users():
     ]
     return json.dumps(user_struct)
 
+@app.route('/api/delete', methods=['POST'])
+def delete():
+    if not request.is_json:
+        return "JSON Exception"
+    key = request.get_json()['api_key']
+    s = db.session
+    s.delete().where(
+        s.verified!=True,
+        s.api_key == key
+    )
+    s.commit()
+    return "Success"
 
 def add_conflict(data):
     if not verify_api_key(data['api_key']):
