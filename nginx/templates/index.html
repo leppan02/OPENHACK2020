@@ -154,6 +154,7 @@
 
             slider.noUiSlider.on("update", function () {
                 updateArcs(lastCountry);
+                updateConflicts();
             })
 
             geometries = map.worldTopo.objects.world.geometries
@@ -164,22 +165,58 @@
             mapping["Russia"] = "RUS"
             reverseMapping["RUS"] = "Russia"
 
+            mapping["Iran"] = "IRN"
+            reverseMapping["IRN"] = "Iran"
+
+            mapping["Laos"] = "LAO"
+            reverseMapping["LAO"] = "Laos"
+
+            mapping["Venezuela"] = "VEN"
+            reverseMapping["VEN"] = "Venezuela"
+
             for (countrymapping in mapping) {
                 // countryFilter[mapping[countrymapping]] = 0
                 fetchedCountry[mapping[countrymapping]] = false
             }
 
             await fetchAndProcessCountry("SWE")
+            await fetchAndProcessConflicts();
 
             await updateArcs()
+            updateConflicts();
         }
 
         async function fetchAndProcessConflicts() {
-            response = await fetch(document.location.origin + '/api/query_conflicts');
+            response_raw = await fetch(document.location.origin + '/api/query_conflict');
+            response = await response_raw.json();
 
             country_conflicts = {};
             for (var i = 0; i < response.length; i++) {
                 let conflict = response[i];
+                if (!(conflict.country in country_conflicts)) {
+                    country_conflicts[conflict.country] = [];
+                }
+
+                country_conflicts[conflict.country].push({
+                    "picture_url" : conflict["picture_url"],
+                    "source" : conflict["source"],
+                    "info" : conflict["info"],
+                });
+            }
+        }
+
+        function updateConflicts() {
+            for (country in mapping) {
+                var fillKey = "defaultFill";
+                if (country in country_conflicts) {
+                    let conflict = country_conflicts[i];
+
+                    fillKey = "hasConflict";
+                }
+
+                map.updateChoropleth({
+                    [mapping[country]]: { fillKey: fillKey },
+                });
             }
         }
 
