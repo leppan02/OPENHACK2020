@@ -48,7 +48,6 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    text-decoration: underline;
     cursor: pointer;
 }
 
@@ -349,8 +348,22 @@ body {
                         w_amount: trades[trade].amount,
                     })
                 }
-
             }
+            // Group similar trades
+            for (var i = 0; i < arcs.length; i++) {
+                for (var j = 0; j < i; j++) {
+                    if (arcs[i].origin === arcs[j].origin &&
+                        arcs[i].destination === arcs[j].destination &&
+                        arcs[i].w_name === arcs[j].w_name) {
+
+                        arcs[j].w_amount += arcs[i].w_amount;
+                        arcs.splice(i, 1);
+                        i -= 1;
+                        break;
+                    }
+                }
+            }
+
             map.arc(arcs)
             lastCountry = countryCode
 
@@ -360,7 +373,7 @@ body {
         function render_sidebar() {
             let elem = document.getElementById("color-hints");
 
-            elem.innerHTML = "";
+            elem.innerHTML = Object.keys(color_hints).length == 0 ? "" : "  <p> (Click to filter) </p> ";
 
             for (weapon_name in color_hints) {
                 var square = document.createElement("div");
