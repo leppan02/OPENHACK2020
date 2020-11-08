@@ -197,29 +197,22 @@ def delete():
     if not request.is_json:
         return "JSON Exception"
     key = request.get_json()['api_key']
-    s = db.session
-    s.trades.delete().where(
-        s.trades.verified!=True,
-        s.trades.api_key == key
-    )
-    s.conflicts.delete().where(
-        s.trades.verified!=True,
-        s.trades.api_key == key
-    )
-    s.commit()
-    return "Success"
+    q1 = Trade.query.filter(Trade.is_verified==False).filter(Trade.api_key ==key).delete()
+    q2 = Conflict.query.filter(Conflict.verified==False).filter(Conflict.api_key ==key).delete()
+    return "worked"
 
 @app.route('/api/verify', methods=['POST'])
 def verify():
     if not request.is_json:
         return "JSON Exception"
+    return json.dumps(request.get_json())
     key = request.get_json()['api_key']
     s = db.session
     s.trades.update().values(verified=True).where(
-        s.api_key == key
+        s.trades.api_key == key
     )
     s.conflicts.update().values(verified=True).where(
-        s.api_key == key
+        s.conflicts.api_key == key
     )
     s.commit()
     return "Success"
