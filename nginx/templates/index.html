@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+<style>
+
+body {
+    background: repeating-linear-gradient(
+        45deg,
+        #152624,
+        #152624 17px,
+        #171C26 23px,
+        #171C26 38px
+    );
+
+    color: #D5D2CE;
+    padding-top: 3em;
+    padding-left: 15%;
+    padding-right: 15%;
+    bottom: 0;
+    font-family: Arial;
+    font-weight: lighter;
+    font-size: 15;
+    height: 100vh;
+    margin: 0;
+}
+
+#contents {
+    padding: 3em;
+    background-color: #0F505E;
+    box-shadow: 0 0 7px black;
+    border-radius: 7px;
+}
+
+input, select, textarea {
+    font-family:  Lucida Console;
+    width: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+
+    background-color: #152624;
+    border-color: #4DBB8A;
+    color: #FFFFFF;
+    border-radius: 7px;
+}
+
+label {
+    margin-top: 1em;
+    display: block;
+    font-size: 15pt;
+}
+
+#cols {
+    display: flex;
+    flex-direction: horizontal;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.right {
+    text-align: right;
+}
+
+.col {
+    width: 45%;
+}
+
+#success {
+    opacity: 0%;
+    width: 50%;
+    margin-left: 25%;
+    margin-right: 25%;
+    height: 3em;
+    background: #4b772d;
+    border: 3px solid #6b882b;
+    border-radius: 10px;
+
+    text-align: center;
+    padding: 1em;
+    box-sizing: border-box;
+
+    transition: opacity 0.5s;
+}
+
+.borderwrapper {
+    overflow: auto;
+    border-radius: 10px;
+    border: 1px solid #6b882b;
+    width: 100%;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #1b302d;
+}
+
+tr:nth-child(odd) {
+    background-color: #0c201e;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #111;
+}
+
+.active {
+  background-color: #4CAF50;
+}
+
+</style>
+
+</head>
+
+<body>
+    <div id="contents">
+        <div class="top-bar">
+            <div class="menu">
+                <ul>
+                    <li><a href="map.html">Map</a></li>
+                    <li><a href="manage.html">Manage</a></li>
+                    <li><a href="auth.html">Auth</a></li>
+                </ul>
+            </div>
+        </div>
+        <h1>Title</h1>
+    </div>
+</body>
+</html>
