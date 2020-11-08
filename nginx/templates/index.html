@@ -319,20 +319,24 @@ body {
                 // console.log(trade.trade_start <= maxyear)
                 // console.log(trade)
                 if ((trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) && trades[trade].trade_start >= minyear && trades[trade].trade_start <= maxyear) {
+                    let is_sending = trades[trade].country_from == countryCode;
+                    let trade_name = (is_sending ? "Selling" : "Purchasing") + " " + trades[trade].weapon_name;
+
                     Math.seedrandom(trades[trade])
                     var sharp = 1 - Math.random() * 2;
 
                     var color;
-                    if (trades[trade].weapon_name in color_hints) {
-                        color = color_hints[trades[trade].weapon_name].color;
+                    if (trade_name in color_hints) {
+                        color = color_hints[trade_name].color;
+                        color_hints[trade_name].total += trades[trade].amount;
                     } else {
                         color = generate_color(colors);
                         colors.push(color);
                         color = "rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", 0.5)";
-                        color_hints[trades[trade].weapon_name] = {"color": color};
+                        color_hints[trade_name] = {"color": color, "total": trades[trade].amount};
                     }
 
-                    if (!filter_weapons.has(trades[trade].weapon_name) && filter_weapons.size > 0) {
+                    if (!filter_weapons.has(trade_name) && filter_weapons.size > 0) {
                         continue;
                     }
                     arcs.push({
@@ -341,7 +345,7 @@ body {
                         arcSharpness: sharp,
                         strokeColor: color,
                         strokeWidth: 2 + Math.log(trades[trade].amount),
-                        w_name: trades[trade].weapon_name,
+                        w_name: trade_name,
                         w_amount: trades[trade].amount,
                     })
                 }
@@ -367,7 +371,7 @@ body {
                 color_hint.className += "color-hint";
                 color_hint.appendChild(square);
 
-                var desc = document.createTextNode("- " + weapon_name);
+                var desc = document.createTextNode("- " + weapon_name + " x " + color_hints[weapon_name].total);
                 if (filter_weapons.has(weapon_name)) {
                     color_hint.className += " selected";
                 } else {
