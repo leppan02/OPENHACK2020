@@ -199,6 +199,7 @@ def delete():
     key = request.get_json()['api_key']
     q1 = Trade.query.filter(Trade.is_verified==False).filter(Trade.api_key ==key).delete()
     q2 = Conflict.query.filter(Conflict.verified==False).filter(Conflict.api_key ==key).delete()
+    db.session.commit()
     return "worked"
 
 @app.route('/api/verify', methods=['POST'])
