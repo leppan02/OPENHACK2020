@@ -157,7 +157,25 @@ def generate():
         return new_key.api_key
     return "Expected JSON"
 
-def add_trade(data):
+@app.route('/api/add_conflict', methods=['POST'])
+def add_conflict_endpoint():
+    if request.is_json:
+        return add_conflict(request.json)
+
+    return "Expected JSON"
+
+@app.route('/api/add_conflicts', methods=['POST'])
+def add_conflicts():
+    if request.is_json:
+        last_resp = None
+        for k in request.get_json():
+            last_resp = add_conflict(k)
+
+        return last_resp
+
+    return "Expected JSON"
+
+def add_conflict(data):
     if not verify_api_key(data['api_key']):
         return 'Exception invalid api_key.'
 
