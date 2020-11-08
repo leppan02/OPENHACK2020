@@ -55,24 +55,28 @@ img {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
+  background-color: #ddd;
   border-radius: 5px;
   border: 1px solid #222;
+  display: flex;
+  flex-direction: row;
+    justify-content: space-around;
+    align-content: stretch;
 }
 
 .top-bar li {
-  float: left;
+    flex-grow: 1;
 }
 
 .top-bar li a {
   display: block;
-  color: white;
+  color: black;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
 }
 
 .top-bar li a:hover:not(.active) {
-  background-color: #111;
+  background-color: #fff;
 }
 
