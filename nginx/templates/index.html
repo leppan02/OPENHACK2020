@@ -284,9 +284,11 @@ body {
 
                 var dist = 0;
                 for (var j = 0; j < previous_colors.length; j++) {
-                    dist += 1 / (50 + Math.abs(new_color[0] - previous_colors[j][0]));
-                    dist += 1 / (50 + Math.abs(new_color[1] - previous_colors[j][1]));
-                    dist += 1 / (50 + Math.abs(new_color[2] - previous_colors[j][2]));
+                    var disth = 0;
+                    disth += Math.abs(new_color[0] - previous_colors[j][0]);
+                    disth += Math.abs(new_color[1] - previous_colors[j][1]);
+                    disth += Math.abs(new_color[2] - previous_colors[j][2]);
+                    dist += 1 / (50 + disth);
                 }
 
                 if (dist < best_dist) {
