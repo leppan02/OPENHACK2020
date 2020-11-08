@@ -6,6 +6,54 @@
     <title>Document</title>
     <link href="nouislider.min.css" rel="stylesheet">
 </head>
+<style>
+
+#main-page {
+    margin-left: 3em;
+    margin-right: 3em;
+
+    display: flex;
+    flex-direction: row;
+}
+
+#col-left {
+    width: 70%;
+    padding: 2em;
+    box-sizing: border-box;
+    margin-right: 1em;
+}
+
+#col-right {
+    margin-left: 1em;
+    margin-top: 5em;
+}
+
+#world-map {
+    margin-top: 5em;
+    width: 100%;
+    height: 70vh;
+}
+
+#slider {
+    width: 100%;
+}
+
+.color-hint {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.color-square {
+    width: 1em;
+    height: 1em;
+    background: red;
+    border-radius: 5px;
+    display: inline-block;
+    margin-right: 1ex;
+}
+
+</style>
 
 <body>
 
@@ -15,9 +63,22 @@
     <script src="https://datamaps.github.io/scripts/0.5.8/datamaps.world.hires.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js">
     </script>
-    <div style="position: relative; width: 1000px; height: 700px; margin-left: 64px;">
-        <div id="container" style="position: relative; width: 100%; height: 100%;"></div>
-        <div id="slider" style="width: 100%;"></div>
+    <div id="main-page">
+        <div id="col-left">
+            <div id="slider"></div>
+
+            <div id="world-map">
+            </div>
+        </div>
+        <div id="col-right">
+            <div id="color-hints">
+                <div class="color-hint">
+                    <div class="color-square"></div>
+                    - hello
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
@@ -29,9 +90,11 @@
         var fetchedCountry = {}
         var lastCountry = ""
 
+        var color_hints = {}; // {color: key}
+
         window.onload = async function () {
             map = new Datamap({
-                element: document.getElementById("container"),
+                element: document.getElementById("world-map"),
                 projection: "mercator",
                 done: function (datamap) {
                     datamap.svg.selectAll('.datamaps-subunit').on('click', async function (geography) {
@@ -54,7 +117,9 @@
                         }
                         // Case with only country name
                         else if (data.origin && data.destination) {
-                            return '<div class="hoverinfo"><strong>Arc</strong><br>' + data.origin + ' -> ' + data.destination + '</div>';
+                            return '<div class="hoverinfo"><strong>Arc</strong><br>' +
+                                data.origin + ' -> ' + data.destination + '<br>' +
+                                data.w_name + "</div>";
                         }
                         // Missing information
                         else {
@@ -137,12 +202,37 @@
             fetchedCountry[countryCode] = true
         }
 
+        function generate_color(previous_colors) {
+            var best_color = null;
+            var best_dist = 0;
+            for (var i = 0; i < 1000; i++) {
+                let new_color = [0 | (Math.random() * 255), 0 | (Math.random() * 255), 0 | (Math.random() * 255)];
+
+                var dist = 0;
+                for (var j = 0; j < previous_colors.length; j++) {
+                    dist += Math.abs(new_color[0] - previous_colors[j][0]);
+                    dist += Math.abs(new_color[1] - previous_colors[j][1]);
+                    dist += Math.abs(new_color[2] - previous_colors[j][2]);
+                }
+
+                if (dist > best_dist) {
+                    best_color = new_color;
+                    best_dist = dist;
+                }
+            }
+            return best_color;
+        }
+
         async function updateArcs(countryCode) {
             let arcs = []
             let minyear = Math.round(slider.noUiSlider.get()[0])
             let maxyear = Math.round(slider.noUiSlider.get()[1])
             console.log(minyear)
             console.log(maxyear)
+
+            color_hints = {};
+            var colors = [[255, 255, 255], [0, 255, 0]];
+            var colors_added = [];
 
             for (trade in trades) {
                 // console.log(trades[trade].country_from === countryCode || trades[trade].country_to === countryCode)
@@ -151,23 +241,55 @@
                 // console.log(trade)
                 if ((trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) && trades[trade].trade_start >= minyear && trades[trade].trade_start <= maxyear) {
                     Math.seedrandom(trades[trade])
+                    var sharp = 2.5 - Math.random() * 2;
+
+                    var color;
+                    if (trades[trade].weapon_name in color_hints) {
+                        color = color_hints[trades[trade].weapon_name].color;
+                    } else {
+                        color = generate_color(colors);
+                        colors.push(color);
+                        color = "rgba(" + color[0] + ", " + color[1] + ", " + color[2] + ", 0.5)";
+                        color_hints[trades[trade].weapon_name] = {"color": color};
+                    }
+
                     arcs.push({
                         origin: trades[trade].country_from,
                         destination: trades[trade].country_to,
-                        arcSharpness: 2.5 - Math.random() * 2,
+                        arcSharpness: sharp,
+                        strokeColor: color,
+                        strokeWidth: Math.log(trades[trade].amount),
+                        w_name: trades[trade].weapon_name,
                     })
                 }
 
             }
             map.arc(arcs)
             lastCountry = countryCode
+
+            render_color_table();
         }
 
+        function render_color_table() {
+            let elem = document.getElementById("color-hints");
+
+            elem.innerHTML = "";
+
+            for (weapon_name in color_hints) {
+                var square = document.createElement("div");
+                square.className += "color-square";
+                square.style = "background: " + color_hints[weapon_name].color + ";";
+
+                var color_hint = document.createElement("div");
+                color_hint.className += "color-hint";
+                color_hint.appendChild(square);
+
+                color_hint.appendChild(document.createTextNode("- " + weapon_name));
+
+                elem.appendChild(color_hint);
+            }
+        }
 
     </script>
 </body>
-
-<style>
-</style>
-
 </html>
