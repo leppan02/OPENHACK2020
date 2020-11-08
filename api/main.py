@@ -211,7 +211,7 @@ def delete():
         return "JSON Exception"
     key = request.get_json()['api_key']
     s = db.session.trades
-    s.update().values(verified=t).where(
+    s.update().values(verified=True).where(
         s.verified!=True,
         s.api_key == key
     )
