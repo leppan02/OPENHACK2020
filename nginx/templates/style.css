@@ -45,19 +45,26 @@ label {
     font-size: 15pt;
 }
 
-ul {
+img {
+  border-radius: 5px;
+
+}
+
+.top-bar ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
   background-color: #333;
+  border-radius: 5px;
+  border: 1px solid #222;
 }
 
-li {
+.top-bar li {
   float: left;
 }
 
-li a {
+.top-bar li a {
   display: block;
   color: white;
   text-align: center;
@@ -65,11 +72,7 @@ li a {
   text-decoration: none;
 }
 
-li a:hover:not(.active) {
+.top-bar li a:hover:not(.active) {
   background-color: #111;
-}
-
-.active {
-  background-color: #4CAF50;
 }
 
