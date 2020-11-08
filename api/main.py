@@ -179,20 +179,7 @@ def add_conflict(data):
     if not verify_api_key(data['api_key']):
         return 'Exception invalid api_key.'
 
-    matches = db.session.query(
-        Trade.id,
-    ).filter(
-        Trade.api_key==data['api_key'],
-        Trade.country==data['country'],
-        Trade.info==get_or_none(data, 'info'),
-        Trade.picture_url==get_or_none(data, 'picture_url'),
-        Trade.date_start==parse_date(data['date_start']),
-        Trade.source==data['source'],
-    ).all()
-    if matches != []:
-        print("Duplicate")
-
-    new_trade = Conflict(
+    new_conflict = Conflict(
         country=data['country'],
         api_key=data['api_key'],
         picture_url=get_or_none(data, 'picture_url'),
@@ -202,8 +189,9 @@ def add_conflict(data):
         source=data['source'],
     )
 
-    db.session.add(new_trade)
+    db.session.add(new_conflict)
     db.session.commit()
+
     return "Added"
 
 if __name__ == "__main__":

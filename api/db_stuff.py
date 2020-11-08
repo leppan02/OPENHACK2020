@@ -64,7 +64,7 @@ class Api(db.Model):
 class Conflict(db.Model):
     __tablename__ = 'conflicts'
 
-    id = db.Column(db.String(), primary_key=True)
+    id = db.Column(db.Integer(), primary_key=True)
     api_key = db.Column(db.String())
     country = db.Column(db.String())
     info = db.Column(db.String())
