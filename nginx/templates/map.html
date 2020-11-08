@@ -476,11 +476,13 @@
                     piccont.appendChild(picture);
                     econflict.appendChild(piccont);
 
-                    var info = document.createElement("p");
+                    var info = document.createElement("div");
+                    info.style = "height:300px;width:300px;overflow:auto;padding:2%"; 
                     info.className += "infotext";
-                    info.textContent = conflict.info;
-                    if (info.textContent.length > 50) {
-                        info.textContent = info.textContent.substr(0, 50);
+                    info.textContent = conflict.info.replace('<newline>','\n');
+                    console.log(info); 
+                    if (info.textContent.length > 400) {
+                        info.textContent = info.textContent.substr(0, 400);
                         info.textContent += "...";
                     }
                     econflict.appendChild(info);
