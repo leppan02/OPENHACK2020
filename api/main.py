@@ -182,7 +182,7 @@ def add_conflict(data):
     new_conflict = Conflict(
         country=data['country'],
         api_key=data['api_key'],
-        picture_url=get_or_none(data, 'picture_url'),
+        picture_url=get_or_none(data, 'picture'),
         info=get_or_none(data, 'info'),
         date_start=parse_date(data['date_start']),
         verified=False,
