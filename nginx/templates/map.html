@@ -475,11 +475,12 @@
                     piccont.appendChild(picture);
                     econflict.appendChild(piccont);
 
-                    var info = document.createElement("div");
+                    var info = document.createElement("a");
+                    info.href = conflict["source"];
                     info.style = "height:300px;width:300px;overflow:auto;padding:2%"; 
                     info.className += "infotext";
                     info.textContent = conflict.info.replace('<newline>','\n');
-                    console.log(info); 
+                    console.log(info);
                     if (info.textContent.length > 400) {
                         info.textContent = info.textContent.substr(0, 400);
                         info.textContent += "...";
