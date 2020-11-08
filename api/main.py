@@ -175,6 +175,49 @@ def add_conflicts():
 
     return "Expected JSON"
 
+@app.route('/api/users', methods=['GET'])
+def users():
+    users = db.session.query(
+        Api.email,
+        Api.full_name,
+        Api.api_key,
+    ).all()
+    user_struct = [
+        {
+            "email": user[0],
+            "full_name":  user[1],
+            "api_key":  user[2],
+        }
+        for user in users
+    ]
+    return json.dumps(user_struct)
+
+@app.route('/api/delete', methods=['POST'])
+def delete():
+    if not request.is_json:
+        return "JSON Exception"
+    key = request.get_json()['api_key']
+    s = db.session.trades
+    s.delete().where(
+        s.verified!=True,
+        s.api_key == key
+    )
+    s.commit()
+    return "Success"
+
+@app.route('/api/verify', methods=['POST'])
+def verify():
+    if not request.is_json:
+        return "JSON Exception"
+    key = request.get_json()['api_key']
+    s = db.session.trades
+    s.update().values(verified=True).where(
+        s.verified!=True,
+        s.api_key == key
+    )
+    s.commit()
+    return "Success"
+
 def add_conflict(data):
     if not verify_api_key(data['api_key']):
         return 'Exception invalid api_key.'
