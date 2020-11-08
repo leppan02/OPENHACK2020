@@ -77,6 +77,7 @@ def parse(data, country, key, weapon_type,year):
                 cur['amount'] = int(data[1].replace('(', '').replace(')', '').replace(' ', ''))
             except:
                 continue
+        print(cur)
         if 'ignore' not in cur:
             suppliers.append(cur)
     return suppliers
@@ -89,7 +90,7 @@ def send(packages):
 def run(key, country_code):
     for year in range(2000, 2020):
         ids = [1,2,3,4,5,6,7,11,12,13,14]
-        for i in ids[3:]:
+        for id in ids:
             print(year, country_code)
             try:
                 country = get_country(country_code)
