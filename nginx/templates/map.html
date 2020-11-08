@@ -421,7 +421,7 @@
 
             elem.innerHTML = Object.keys(color_hints).length == 0 ? "" : "  <p> (Click to filter) </p> ";
             if (lastCountry) {
-                elem.innerHTML = "<h2> " + lastCountry + "</h2>" + elem.innerHTML;
+                elem.innerHTML = "<h2> " + reverseMapping[lastCountry] + "</h2>" + elem.innerHTML;
             }
 
             let weapons = Object.keys(color_hints);
