@@ -91,6 +91,8 @@
 
         var color_hints = {}; // {color: key}
 
+        var filter_weapons = new Set(["Aircraft"]);
+
         window.onload = async function () {
             map = new Datamap({
                 element: document.getElementById("world-map"),
@@ -280,7 +282,7 @@
             console.log(maxyear)
 
             color_hints = {};
-            var colors = [[255, 255, 255], [255, 255, 255], [0, 255, 0]];
+            var colors = [[0, 0, 0], [0, 0, 0], [255, 255, 255], [255, 255, 255]];
             var colors_added = [];
 
             for (trade in trades) {
@@ -289,6 +291,7 @@
                 // console.log(trade.trade_start <= maxyear)
                 // console.log(trade)
                 if ((trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) && trades[trade].trade_start >= minyear && trades[trade].trade_start <= maxyear) {
+
                     Math.seedrandom(trades[trade])
                     var sharp = 1 - Math.random() * 2;
 
@@ -302,6 +305,9 @@
                         color_hints[trades[trade].weapon_name] = {"color": color};
                     }
 
+                    if (!filter_weapons.has(trades[trade].weapon_name) && filter_weapons.size > 0) {
+                        continue;
+                    }
                     arcs.push({
                         origin: trades[trade].country_from,
                         destination: trades[trade].country_to,
@@ -334,7 +340,26 @@
                 color_hint.className += "color-hint";
                 color_hint.appendChild(square);
 
-                color_hint.appendChild(document.createTextNode("- " + weapon_name));
+                var desc = document.createTextNode("- " + weapon_name);
+                if (filter_weapons.has(weapon_name)) {
+                    var desc_ = document.createElement("b");
+                    desc_.appendChild(desc);
+                    desc = desc_;
+                }
+
+                let name = weapon_name; // Capture
+                color_hint.addEventListener("click", () => {
+                    console.log("hej " + name);
+                    if (filter_weapons.has(name)) {
+                        filter_weapons.delete(name);
+                    } else {
+                        filter_weapons.add(name);
+                    }
+                    render_sidebar();
+                    updateArcs(lastCountry);
+                });
+
+                color_hint.appendChild(desc);
 
                 elem.appendChild(color_hint);
             }
