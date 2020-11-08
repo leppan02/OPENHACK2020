@@ -151,7 +151,7 @@ def generate():
     #{full_name:..., email:...}
     if request.is_json:
         data = request.get_json()
-        new_key = Api(data['email'], data['full_name'])
+        new_key = Api(data['full_name'],data['email'], )
         db.session.add(new_key)
         db.session.commit()
         return new_key.api_key
