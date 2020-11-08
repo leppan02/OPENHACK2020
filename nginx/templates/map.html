@@ -184,7 +184,7 @@
                 },
                 fills: {
                     defaultFill: "#eeeeee",
-                    hasConflict: "#888888"
+                    hasConflict: "#bb6666"
                 },
                 strokeColor: "#000000",
             });
@@ -412,6 +412,9 @@
             let elem = document.getElementById("color-hints");
 
             elem.innerHTML = Object.keys(color_hints).length == 0 ? "" : "  <p> (Click to filter) </p> ";
+            if (lastCountry) {
+                elem.innerHTML = "<h2> " + lastCountry + "</h2>" + elem.innerHTML;
+            }
 
             let weapons = Object.keys(color_hints);
             weapons.sort();
