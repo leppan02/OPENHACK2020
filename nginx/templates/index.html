@@ -8,6 +8,11 @@
 </head>
 <style>
 
+body {
+    background-color: #152624;
+    color: white;
+}
+
 #main-page {
     margin-left: 3em;
     margin-right: 3em;
@@ -52,6 +57,19 @@
     margin-right: 1ex;
 }
 
+.hoverinfo {
+    color: black;
+}
+
+.selected {
+    font-style: italic;
+    color: #ffffff;
+}
+
+.unselected {
+    color: #999999;
+}
+
 </style>
 
 <body>
@@ -91,10 +109,16 @@
 
         var color_hints = {}; // {color: key}
 
+        var filter_weapons = new Set();
+
         window.onload = async function () {
             map = new Datamap({
                 element: document.getElementById("world-map"),
                 projection: "mercator",
+                geographyConfig: {
+                    borderColor: '#444',
+                    borderWidth: 0.5,
+                },
                 done: function (datamap) {
                     datamap.svg.selectAll('.datamaps-subunit').on('click', async function (geography) {
                         console.log(geography)
@@ -118,7 +142,7 @@
                         else if (data.origin && data.destination) {
                             return '<div class="hoverinfo"><strong>Arc</strong><br>' +
                                 data.origin + ' -> ' + data.destination + '<br>' +
-                                data.w_name + "</div>";
+                                data.w_name + " x " + data.w_amount + "</div>";
                         }
                         // Missing information
                         else {
@@ -127,9 +151,10 @@
                     }
                 },
                 fills: {
-                    defaultFill: "#152624",
+                    defaultFill: "#eeeeee",
                     hasConflict: "#888888"
                 },
+                strokeColor: "#000000",
             });
 
             var slider = document.getElementById('slider');
@@ -154,6 +179,7 @@
 
             slider.noUiSlider.on("update", function () {
                 updateArcs(lastCountry);
+                updateConflicts();
             })
 
             geometries = map.worldTopo.objects.world.geometries
@@ -164,22 +190,58 @@
             mapping["Russia"] = "RUS"
             reverseMapping["RUS"] = "Russia"
 
+            mapping["Iran"] = "IRN"
+            reverseMapping["IRN"] = "Iran"
+
+            mapping["Laos"] = "LAO"
+            reverseMapping["LAO"] = "Laos"
+
+            mapping["Venezuela"] = "VEN"
+            reverseMapping["VEN"] = "Venezuela"
+
             for (countrymapping in mapping) {
                 // countryFilter[mapping[countrymapping]] = 0
                 fetchedCountry[mapping[countrymapping]] = false
             }
 
             await fetchAndProcessCountry("SWE")
+            await fetchAndProcessConflicts();
 
             await updateArcs()
+            updateConflicts();
         }
 
         async function fetchAndProcessConflicts() {
-            response = await fetch(document.location.origin + '/api/query_conflicts');
+            response_raw = await fetch(document.location.origin + '/api/query_conflict');
+            response = await response_raw.json();
 
             country_conflicts = {};
             for (var i = 0; i < response.length; i++) {
                 let conflict = response[i];
+                if (!(conflict.country in country_conflicts)) {
+                    country_conflicts[conflict.country] = [];
+                }
+
+                country_conflicts[conflict.country].push({
+                    "picture_url" : conflict["picture_url"],
+                    "source" : conflict["source"],
+                    "info" : conflict["info"],
+                });
+            }
+        }
+
+        function updateConflicts() {
+            for (country in mapping) {
+                var fillKey = "defaultFill";
+                if (country in country_conflicts) {
+                    let conflict = country_conflicts[i];
+
+                    fillKey = "hasConflict";
+                }
+
+                map.updateChoropleth({
+                    [mapping[country]]: { fillKey: fillKey },
+                });
             }
         }
 
@@ -222,9 +284,11 @@
 
                 var dist = 0;
                 for (var j = 0; j < previous_colors.length; j++) {
-                    dist += 1 / (50 + Math.abs(new_color[0] - previous_colors[j][0]));
-                    dist += 1 / (50 + Math.abs(new_color[1] - previous_colors[j][1]));
-                    dist += 1 / (50 + Math.abs(new_color[2] - previous_colors[j][2]));
+                    var disth = 0;
+                    disth += Math.abs(new_color[0] - previous_colors[j][0]);
+                    disth += Math.abs(new_color[1] - previous_colors[j][1]);
+                    disth += Math.abs(new_color[2] - previous_colors[j][2]);
+                    dist += 1 / (50 + disth);
                 }
 
                 if (dist < best_dist) {
@@ -243,7 +307,7 @@
             console.log(maxyear)
 
             color_hints = {};
-            var colors = [[255, 255, 255], [255, 255, 255], [0, 255, 0]];
+            var colors = [[0, 0, 0], [0, 0, 0], [255, 255, 255], [255, 255, 255]];
             var colors_added = [];
 
             for (trade in trades) {
@@ -253,7 +317,7 @@
                 // console.log(trade)
                 if ((trades[trade].country_from === countryCode || trades[trade].country_to === countryCode) && trades[trade].trade_start >= minyear && trades[trade].trade_start <= maxyear) {
                     Math.seedrandom(trades[trade])
-                    var sharp = 2.5 - Math.random() * 2;
+                    var sharp = 1 - Math.random() * 2;
 
                     var color;
                     if (trades[trade].weapon_name in color_hints) {
@@ -265,6 +329,9 @@
                         color_hints[trades[trade].weapon_name] = {"color": color};
                     }
 
+                    if (!filter_weapons.has(trades[trade].weapon_name) && filter_weapons.size > 0) {
+                        continue;
+                    }
                     arcs.push({
                         origin: trades[trade].country_from,
                         destination: trades[trade].country_to,
@@ -272,6 +339,7 @@
                         strokeColor: color,
                         strokeWidth: 2 + Math.log(trades[trade].amount),
                         w_name: trades[trade].weapon_name,
+                        w_amount: trades[trade].amount,
                     })
                 }
 
@@ -279,10 +347,10 @@
             map.arc(arcs)
             lastCountry = countryCode
 
-            render_color_table();
+            render_sidebar();
         }
 
-        function render_color_table() {
+        function render_sidebar() {
             let elem = document.getElementById("color-hints");
 
             elem.innerHTML = "";
@@ -296,7 +364,28 @@
                 color_hint.className += "color-hint";
                 color_hint.appendChild(square);
 
-                color_hint.appendChild(document.createTextNode("- " + weapon_name));
+                var desc = document.createTextNode("- " + weapon_name);
+                if (filter_weapons.has(weapon_name)) {
+                    color_hint.className += " selected";
+                } else {
+                    if (filter_weapons.size > 0) {
+                        color_hint.className += " unselected";
+                    }
+                }
+
+                let name = weapon_name; // Capture
+                color_hint.addEventListener("click", () => {
+                    console.log("hej " + name);
+                    if (filter_weapons.has(name)) {
+                        filter_weapons.delete(name);
+                    } else {
+                        filter_weapons.add(name);
+                    }
+                    render_sidebar();
+                    updateArcs(lastCountry);
+                });
+
+                color_hint.appendChild(desc);
 
                 elem.appendChild(color_hint);
             }
