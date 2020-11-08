@@ -207,9 +207,9 @@ body {
             }
 
             await fetchAndProcessCountry("SWE")
-            await fetchAndProcessConflicts();
-
             await updateArcs()
+
+            await fetchAndProcessConflicts();
             updateConflicts();
         }
 
@@ -261,7 +261,8 @@ body {
             url.search = new URLSearchParams({ "country_to": reverseMapping[countryCode] }).toString();
 
             response = await fetch(url);
-            rawTrades.concat(response.json())
+            rawTrades = rawTrades.concat(await response.json())
+
 
             for (var i = 0; i < rawTrades.length; i++) {
                 if (!(rawTrades[i].country_to in mapping)) {
