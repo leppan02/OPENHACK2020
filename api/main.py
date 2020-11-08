@@ -244,8 +244,8 @@ def query_conflict():
         Conflict.country,
         Conflict.picture_url,
         Conflict.info,
-        Conflict.source,
         Conflict.verified,
+        Conflict.source,
     )
 
     trades = conflictsq.all()
