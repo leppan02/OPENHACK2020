@@ -206,7 +206,7 @@ def delete():
     return "Success"
 
 @app.route('/api/verify', methods=['POST'])
-def delete():
+def verify():
     if not request.is_json:
         return "JSON Exception"
     key = request.get_json()['api_key']
