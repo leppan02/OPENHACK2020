@@ -61,6 +61,15 @@ body {
     color: black;
 }
 
+.selected {
+    font-style: italic;
+    color: #ffffff;
+}
+
+.unselected {
+    color: #999999;
+}
+
 </style>
 
 <body>
@@ -355,9 +364,11 @@ body {
 
                 var desc = document.createTextNode("- " + weapon_name);
                 if (filter_weapons.has(weapon_name)) {
-                    var desc_ = document.createElement("b");
-                    desc_.appendChild(desc);
-                    desc = desc_;
+                    color_hint.className += " selected";
+                } else {
+                    if (filter_weapons.size > 0) {
+                        color_hint.className += " unselected";
+                    }
                 }
 
                 let name = weapon_name; // Capture
