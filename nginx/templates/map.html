@@ -215,19 +215,25 @@ body {
                 updateConflicts();
             })
 
+            corrections = {
+                "RUS": "Russia",
+                "IRN": "Iran",
+                "LAO": "Laos",
+                "VEN": "Venezuela",
+                "CZE": "Chechia",
+                "KOR": "South Korea",
+            }
+
             geometries = map.worldTopo.objects.world.geometries
             for (i = 0; i < geometries.length; i++) {
-                mapping[geometries[i].properties.name] = geometries[i].id
-
+                name = (geometries[i].id in corrections) ? corrections[geometries[i].id] : geometries[i].properties.name
+                mapping[name] = geometries[i].id
+                reverseMapping[geometries[i].id] = name
             }
-            mapping["Russia"] = "RUS"
-            mapping["Iran"] = "IRN"
-            mapping["Laos"] = "LAO"
-            mapping["Venezuela"] = "VEN"
 
             for (countrymapping in mapping) {
                 // countryFilter[mapping[countrymapping]] = 0
-                reverseMapping[mapping[countrymapping]] = countrymapping
+                // reverseMapping[mapping[countrymapping]] = countrymapping
                 fetchedCountry[mapping[countrymapping]] = false
             }
 
