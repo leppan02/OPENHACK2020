@@ -47,7 +47,6 @@
 .color-square {
     width: 1em;
     height: 1em;
-    background: red;
     border-radius: 5px;
     display: inline-block;
     margin-right: 1ex;
@@ -72,12 +71,11 @@
         </div>
         <div id="col-right">
             <div id="color-hints">
-                <div class="color-hint">
-                    <div class="color-square"></div>
-                    - hello
-                </div>
             </div>
 
+            <div id="conflicts">
+
+            </div>
         </div>
     </div>
 
@@ -89,6 +87,7 @@
         // var countryFilter = {}
         var fetchedCountry = {}
         var lastCountry = ""
+        var country_conflicts = [];
 
         var color_hints = {}; // {color: key}
 
@@ -126,7 +125,11 @@
                             return '';
                         }
                     }
-                }
+                },
+                fills: {
+                    defaultFill: "#ABDDA4",
+                    hasConflict: "#888888"
+                },
             });
 
             var slider = document.getElementById('slider');
@@ -150,7 +153,7 @@
             });
 
             slider.noUiSlider.on("update", function () {
-                updateArcs(lastCountry)
+                updateArcs(lastCountry);
             })
 
             geometries = map.worldTopo.objects.world.geometries
@@ -169,6 +172,15 @@
             await fetchAndProcessCountry("SWE")
 
             await updateArcs()
+        }
+
+        async function fetchAndProcessConflicts() {
+            response = await fetch(document.location.origin + '/api/query_conflicts');
+
+            country_conflicts = {};
+            for (var i = 0; i < response.length; i++) {
+                let conflict = response[i];
+            }
         }
 
         async function fetchAndProcessCountry(countryCode) {
@@ -258,7 +270,7 @@
                         destination: trades[trade].country_to,
                         arcSharpness: sharp,
                         strokeColor: color,
-                        strokeWidth: Math.log(trades[trade].amount),
+                        strokeWidth: 2 + Math.log(trades[trade].amount),
                         w_name: trades[trade].weapon_name,
                     })
                 }
