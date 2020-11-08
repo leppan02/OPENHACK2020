@@ -197,8 +197,12 @@ def delete():
     if not request.is_json:
         return "JSON Exception"
     key = request.get_json()['api_key']
-    s = db.session.trades
-    s.delete().where(
+    s = db.session
+    s.trades.delete().where(
+        s.verified!=True,
+        s.api_key == key
+    )
+    s.conflicts.delete().where(
         s.verified!=True,
         s.api_key == key
     )
@@ -210,9 +214,11 @@ def verify():
     if not request.is_json:
         return "JSON Exception"
     key = request.get_json()['api_key']
-    s = db.session.trades
-    s.update().values(verified=True).where(
-        s.verified!=True,
+    s = db.session
+    s.trades.update().values(verified=True).where(
+        s.api_key == key
+    )
+    s.conflicts.update().values(verified=True).where(
         s.api_key == key
     )
     s.commit()
