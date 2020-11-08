@@ -197,8 +197,21 @@ def delete():
     if not request.is_json:
         return "JSON Exception"
     key = request.get_json()['api_key']
-    s = db.session
+    s = db.session.trades
     s.delete().where(
+        s.verified!=True,
+        s.api_key == key
+    )
+    s.commit()
+    return "Success"
+
+@app.route('/api/verify', methods=['POST'])
+def delete():
+    if not request.is_json:
+        return "JSON Exception"
+    key = request.get_json()['api_key']
+    s = db.session.trades
+    s.update().values(verified=t).where(
         s.verified!=True,
         s.api_key == key
     )
