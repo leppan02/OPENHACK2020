@@ -34,6 +34,51 @@ tr:nth-child(odd) {
     background-color: #0c201e;
 }
 
+#aboutus {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    color: #222;
+}
+
+#aboutus a {
+    font-style: italic;
+    text-decoration: underline;
+    color: #000;
+}
+
+.col {
+    width: 49.5%;
+    margin: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#divider {
+    width: 1px;
+    align-self: stretch;
+    background: #333;
+}
+
+#leftcol {
+    text-align: right;
+}
+
+.contact {
+    border-radius: 10px;
+    box-shadow: 0 0 5px black;
+    padding: 1em;
+    margin-bottom: 1em;
+    background-color: #8AC5D2;
+    border: 2px solid #253634;
+}
+
+.contact > h2 {
+    text-align: center;
+    color: #000;
+}
+
 </style>
 
 </head>
@@ -52,27 +97,42 @@ tr:nth-child(odd) {
             </div>
         </div>
         <h1>Team:</h1>
-        <h2>Leopold Hermansson</h2>
-        <p>Student at KTH.</p>
-        <h3>Contact:</h3>
-        <p>Linkedin: <i><a href="https://www.linkedin.com/in/leopold-pluto-hermansson-1b0621198/">https://www.linkedin.com/in/leopold-pluto-hermansson-1b0621198/</a></i></p>
-        <p>Email: <b>leopoldh@kth.se</b></p>
-        <p>Discord: <b>leppan#3195</b></p>
-        <p>Github: <b><a href="https://github.com/leppan02">leppan02</a></b></p>
-        <h2>Jonathan Lööv</h2>
-        <h3>Contact</h3>
-        <p>Email: <b>jonathan.loov (at) gmail.com</b></p>
-        <p>Github: <b><a href="https://github.com/loovjo">loovjo</a></b></p>
-        <p>Linkedin: <b><a href="https://www.linkedin.com/in/jonathan-l%C3%B6%C3%B6v-81153017a/">Jonathan Lööv</a></b></p>
-        <h2>Mateusz Drwal</h2>
-        <h3>Contact:</h3>
-        <p>Email: <b>drwal.mateusz@gmail.com</b></p>
-        <p>Discord: <b>mateuszdrwal#9960</b></p>
-        <p>Github: <b><a href="https://github.com/mateuszdrwal">mateuszdrwal</a></b></p>
-        <h2>Axel Nilsson</h2>
-        <p>Email: <b>axel.v.nilsson@gmail.com</b></p>
-        <p>Discord: <b>axelamit#9017</b></p>
-        <p>Github: <b><a href="https://github.com/axelamit">axelamit</a></b></p>
+        <div id="aboutus">
+            <div id="leftcol" class="col">
+                <div class="contact">
+                    <h2>Leopold Hermansson</h2>
+                    <p>Student at KTH.</p>
+                    <h3>Contact:</h3>
+                    <p>Linkedin: <i><a href="https://www.linkedin.com/in/leopold-pluto-hermansson-1b0621198/">https://www.linkedin.com/in/leopold-pluto-hermansson-1b0621198/</a></i></p>
+                    <p>Email: <b>leopoldh@kth.se</b></p>
+                    <p>Discord: <b>leppan#3195</b></p>
+                    <p>Github: <b><a href="https://github.com/leppan02">leppan02</a></b></p>
+                </div>
+                <div class="contact">
+                    <h2>Jonathan Lööv</h2>
+                    <h3>Contact</h3>
+                    <p>Email: <b>jonathan.loov(at)gmail.com</b></p>
+                    <p>Github: <b><a href="https://github.com/loovjo">loovjo</a></b></p>
+                    <p>Linkedin: <b><a href="https://www.linkedin.com/in/jonathan-l%C3%B6%C3%B6v-81153017a/">Jonathan Lööv</a></b></p>
+                </div>
+            </div>
+            <div id="divider"></div>
+            <div id="rightcol" class="col">
+                <div class="contact">
+                    <h2>Mateusz Drwal</h2>
+                    <h3>Contact:</h3>
+                    <p>Email: <b>drwal.mateusz@gmail.com</b></p>
+                    <p>Discord: <b>mateuszdrwal#9960</b></p>
+                    <p>Github: <b><a href="https://github.com/mateuszdrwal">mateuszdrwal</a></b></p>
+                </div>
+                    <div class="contact">
+                    <h2>Axel Nilsson</h2>
+                    <p>Email: <b>axel.v.nilsson@gmail.com</b></p>
+                    <p>Discord: <b>axelamit#9017</b></p>
+                    <p>Github: <b><a href="https://github.com/axelamit">axelamit</a></b></p>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
