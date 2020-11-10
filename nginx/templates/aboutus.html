@@ -38,6 +38,9 @@ tr:nth-child(odd) {
     display: flex;
     flex-direction: row;
     align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
     color: #222;
 }
 
@@ -47,29 +50,14 @@ tr:nth-child(odd) {
     color: #000;
 }
 
-.col {
-    width: 49.5%;
-    margin: 1em;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-#divider {
-    width: 1px;
-    align-self: stretch;
-    background: #333;
-}
-
-#leftcol {
-    text-align: right;
-}
 
 .contact {
+    flex-shrink: 1;
+    flex-grow: 1;
     border-radius: 10px;
     box-shadow: 0 0 5px black;
     padding: 1em;
-    margin-bottom: 1em;
+    margin: 1em;
     background-color: #8AC5D2;
     border: 2px solid #253634;
 }
@@ -98,7 +86,6 @@ tr:nth-child(odd) {
         </div>
         <h1>Team:</h1>
         <div id="aboutus">
-            <div id="leftcol" class="col">
                 <div class="contact">
                     <h2>Leopold Hermansson</h2>
                     <p>Student at KTH.</p>
@@ -115,9 +102,6 @@ tr:nth-child(odd) {
                     <p>Github: <b><a href="https://github.com/loovjo">loovjo</a></b></p>
                     <p>Linkedin: <b><a href="https://www.linkedin.com/in/jonathan-l%C3%B6%C3%B6v-81153017a/">Jonathan Lööv</a></b></p>
                 </div>
-            </div>
-            <div id="divider"></div>
-            <div id="rightcol" class="col">
                 <div class="contact">
                     <h2>Mateusz Drwal</h2>
                     <h3>Contact:</h3>
@@ -131,7 +115,6 @@ tr:nth-child(odd) {
                     <p>Discord: <b>axelamit#9017</b></p>
                     <p>Github: <b><a href="https://github.com/axelamit">axelamit</a></b></p>
                 </div>
-            </div>
         </div>
     </div>
 </body>
